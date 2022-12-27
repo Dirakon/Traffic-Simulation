@@ -1,13 +1,7 @@
-using Godot;
-
-public class Position
+public record struct Position(double Offset, Road Road)
 {
-    public double offset;
-    public Road road;
-
-    public Position(Road road, double offset)
+    public override string ToString()
     {
-        this.road = road;
-        this.offset = offset;
+        return Road.Name + " " + Offset;
     }
 }

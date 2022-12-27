@@ -1,19 +1,34 @@
-[gd_scene load_steps=4 format=3 uid="uid://q1geu8hdpbg5"]
+[gd_scene load_steps=5 format=3 uid="uid://q1geu8hdpbg5"]
 
+[ext_resource type="Script" path="res://Main.cs" id="1_4p6e4"]
 [ext_resource type="PackedScene" uid="uid://c4mvq6fphnisr" path="res://road.tscn" id="1_rcmr0"]
 [ext_resource type="PackedScene" uid="uid://bu323iy4kf115" path="res://car.tscn" id="2_1e0e7"]
 [ext_resource type="Resource" uid="uid://bm0xe3wdk8tfm" path="res://in_editor_position.tres" id="3_n1ced"]
 
 [node name="main" type="Node3D"]
-
-[node name="road" parent="." instance=ExtResource("1_rcmr0")]
-
-[node name="car" parent="road" instance=ExtResource("2_1e0e7")]
-transform = Transform3D(0.592261, 0.000605128, 0.805733, -2.9103e-11, 0.999998, -0.000751029, -0.80571, 0.000444818, 0.592278, 0.0688466, 0.504516, -6.74279)
-_inEditorEndPosition = ExtResource("3_n1ced")
-speed = 5.0
+script = ExtResource("1_4p6e4")
+inEditorRoads = [NodePath("road"), NodePath("road2"), NodePath("road3")]
 
 [node name="Camera3D" type="Camera3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 0.83239, 0.554191, 0, -0.554191, 0.83239, 0, 8.34793, 5.08056)
+transform = Transform3D(1, 0, 0, 0, 0.83239, 0.554191, 0, -0.554191, 0.83239, 0, 8.34793, 18.1653)
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="Camera3D"]
+
+[node name="road" parent="." instance=ExtResource("1_rcmr0")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -15.2038)
+
+[node name="car" parent="road" instance=ExtResource("2_1e0e7")]
+transform = Transform3D(0.592264, -5.33982e-05, 0.805744, 3.63798e-12, 1, 6.62719e-05, -0.805744, -3.92504e-05, 0.592263, 0.0687756, 0.5, -6.74271)
+_inEditorEndPosition = ExtResource("3_n1ced")
+speed = 10.0
+
+[node name="road2" parent="." instance=ExtResource("1_rcmr0")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 7.68047)
+
+[node name="car" parent="road2" instance=ExtResource("2_1e0e7")]
+transform = Transform3D(0.592264, -5.33982e-05, 0.805744, 3.63798e-12, 1, 6.62719e-05, -0.805744, -3.92504e-05, 0.592263, 0.0687756, 0.5, -6.74271)
+_inEditorEndPosition = ExtResource("3_n1ced")
+speed = 10.0
+
+[node name="road3" parent="." instance=ExtResource("1_rcmr0")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.142109, 0, -4.35543)
