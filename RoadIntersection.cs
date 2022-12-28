@@ -1,4 +1,4 @@
-public record struct RoadIntersection(double OurOffset, double TheirOffset, Road OurRoad, Road OtherRoad)
+public record class RoadIntersection(double OurOffset, double TheirOffset, Road OurRoad, Road OtherRoad)
 {
     public Position AsOtherRoadPosition()
     {

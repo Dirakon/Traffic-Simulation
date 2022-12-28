@@ -14,8 +14,7 @@ public record struct CarMovement
 
     public override string ToString()
     {
-        return "From: " +  StartPosition + '\n' +
-            "To: " + EndPosition;
+        return $"From {{{StartPosition}}} to {{{EndPosition}}}";
     }
 
     public Position StartPosition { get;  }
