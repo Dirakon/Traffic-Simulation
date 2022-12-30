@@ -4,6 +4,6 @@
 
 [resource]
 script = ExtResource("1_wkwct")
-offset = 1000.0
+offset = 100.0
 road = NodePath("../../road2")
 metadata/_editor_prop_ptr_Road = NodePath("..")

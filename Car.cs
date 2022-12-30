@@ -7,70 +7,187 @@ using Godot;
 public partial class Car : PathFollow3D
 {
     [Export] public InEditorPosition _inEditorEndPosition;
+    [Export] public float PositiveDirectionHOffset, NegativeDirectionHOffset;
     private Position currentPosition;
     public Position? endPosition;
-    private List<CarMovement> currentPath;
+    private List<CarMovement>? currentPath;
     
     [Export] private double speed;
+    private List<ReservedCarSpot> ReservedCarSpots = new List<ReservedCarSpot>();
 
+    [Export] private double ReserveRadius;
     // Called when the node enters the scene tree for the first time.
     public override void _Ready()
     {
         endPosition = _inEditorEndPosition.GetPosition(this);
 
-        var road = GetParent() as Road;
+        var road = GetParent() as Road ?? throw new InvalidOperationException($"{Name} does not have initial road as the parent");
         var offset = road.GetOffsetOfGivenGlobalPosition(GlobalPosition);
         currentPosition = new Position(offset,road);
-
-        GD.Print(endPosition.Value.Road.Name);
     }
 
-    // TODO: replace ticks with signals from Main signifying the start of simulation
-    public int ticksLeft = 0;
+    private void GetOnTheRoad(Position position, int direction)
+    {
+        var newParent = position.Road;
+        var oldParent = GetParent() as Road ?? throw new InvalidOperationException($"{Name} is in invalid state: it does not belong to any road");
+
+        if (oldParent != newParent)
+        {
+            oldParent.RemoveChild(this);
+            newParent.AddChild(this);
+        }
+        Progress = (float)position.Offset;
+        HOffset = direction == -1 ? NegativeDirectionHOffset : PositiveDirectionHOffset;
+        //GD.Print($"{Name} on the road! THe direction is {direction}");
+    }
+
+    private bool CanClaimSpot(ReservedCarSpot potentialSpot)
+    {
+        return potentialSpot.RoadToReserve.ReservedCarSpots.All(spot => 
+            spot.Direction != potentialSpot.Direction || 
+            spot.ReservingCar == this || 
+            spot.GetStartingOffset() > potentialSpot.GetEndingOffset() ||
+            spot.GetEndingOffset() < potentialSpot.GetStartingOffset()
+            );
+    }
+
+    private void ClaimSpot(ReservedCarSpot spot)
+    {
+        var spotClaimedOnTheSameRoad =
+            ReservedCarSpots.Find(claimedSpot => spot.RoadToReserve == claimedSpot.RoadToReserve);
+        if (spotClaimedOnTheSameRoad != null)
+        {
+            ReservedCarSpots.Remove(spotClaimedOnTheSameRoad);
+            spot.RoadToReserve.ReservedCarSpots.Remove(spotClaimedOnTheSameRoad);
+        }
+        spot.RoadToReserve.ReservedCarSpots.Add(spot);
+        ReservedCarSpots.Add(spot);
+    }
+
+    private void UnclaimSpot(ReservedCarSpot spot)
+    {
+        ReservedCarSpots.Remove(spot);
+        spot.RoadToReserve.ReservedCarSpots.Remove(spot);
+    }
+
+    private void AttemptToClaimTheInitialRoad(CarMovement initialMoveOrder)
+    {
+        var spotToClaim = new ReservedCarSpot(this, currentPosition.Offset, ReserveRadius, currentPosition.Road, initialMoveOrder.GetDirection());
+        if (CanClaimSpot(spotToClaim))
+        {
+            ClaimSpot(spotToClaim);
+            GetOnTheRoad(currentPosition,initialMoveOrder.GetDirection());
+        }
+    }
+    
     // Called every frame. 'delta' is the elapsed time since the previous frame.
     public override void _Process(double delta)
     {
-        if (ticksLeft-- == 0)
+        if (currentPath == null || currentPath.IsEmpty())
         {
-            GD.Print(FindShortestPath(currentPosition,endPosition.Value).Count);
-            var path = FindShortestPath(currentPosition, endPosition.Value);
-            path.ForEach(
-                order =>
-                {
-                    GD.Print(order);
-                });
-            currentPath = path;
+            // TODO: remove this hardcoded path to replace with something dynamic and random
+            currentPath = FindShortestPath(currentPosition, endPosition.Value);
+            return;
         }
-        if (currentPath.Count == 0) return;
-        // Move forward
+        
+        if (ReservedCarSpots.Count == 0)
+        {
+            // No spots are reserved at all, meaning the car is not yet on the road.
+            AttemptToClaimTheInitialRoad(currentPath[0]);
+            return;
+        }
         
         var currentGoal = currentPath[0].EndPosition; 
         var direction = Math.Sign(currentGoal.Offset - currentPosition.Offset);
-        currentPosition.Offset += direction * delta * speed;
+        var newOffset = currentPosition.Offset + direction * delta * speed;
+        var newDirection = Math.Sign(currentGoal.Offset - newOffset);
 
-        var newDirection = Math.Sign(currentGoal.Offset - currentPosition.Offset);
+        var newSpot = new ReservedCarSpot(this, newOffset, ReserveRadius, currentGoal.Road, currentPath[0].GetDirection());
+        if (!CanClaimSpot(newSpot))
+            return;
 
+        if (ShouldClaimFutureSpot(currentPath))
+        {
+            var futureSpot = GetFutureSpot(currentPath);
+            if (!CanClaimSpot(futureSpot))
+                return;
+            ClaimSpot(futureSpot);
+        }
+
+        ClaimSpot(newSpot);
+        currentPosition.Offset = newOffset;
         Progress = (float) currentPosition.Offset;
-        
-        if (newDirection == direction && direction != 0) return;
-        // When movement finished, go to the next order
-        
-        currentPath.RemoveAt(0);
 
-        if (currentPath.Count == 0) return;
-        // When there is a next order, reparent to the new road and prepare for the movement.
+        RemoveInvalidReservedSpots(currentPath);
+        
+        var isCurrentGoalReached = newDirection != direction || direction == 0;
+        if (isCurrentGoalReached)
+        {
+            currentPath.RemoveAt(0);
 
-        var newParent = currentPath[0].StartPosition.Road;
-        var oldParent = currentPosition.Road;
+            if (!currentPath.IsEmpty())
+            {
+                // When there is a next order, reparent to the new road and prepare for the movement.
+                GetOnTheRoad(currentPath[0].StartPosition, currentPath[0].GetDirection());
+
+                currentPosition = currentPath[0].StartPosition;
+                Progress = (float)currentPosition.Offset;
+            }
             
-        oldParent.RemoveChild(this);
-        newParent.AddChild(this);
-
-        currentPosition = currentPath[0].StartPosition;
-        Progress = (float)currentPosition.Offset;
+        }
     }
 
-    public static List<CarMovement>? FindShortestPath(Position startPosition, Position endPosition, double currentPathLength = 0, int iterations = 0,Dictionary<Position,double> shortestDistances = null)
+    private void RemoveInvalidReservedSpots(List<CarMovement> carMovementOrders)
+    {
+        var currentRoadSpot = ReservedCarSpots
+            .FirstOrDefault(spot=>spot.RoadToReserve==carMovementOrders[0].GetRoad());
+        var futureRoadSpot = carMovementOrders.Count <= 1 ?null:
+            ReservedCarSpots
+                .FirstOrDefault(spot=>spot.RoadToReserve==carMovementOrders[1].GetRoad());;
+        var previousRoadSpot = ReservedCarSpots.
+            FirstOrDefault(spot=> spot != currentRoadSpot && spot != futureRoadSpot);
+        if (futureRoadSpot != null)
+        {
+            var distanceFromFutureSpot =
+                Math.Abs(carMovementOrders[0].EndPosition.Offset - currentPosition.Offset);
+            if (distanceFromFutureSpot > ReserveRadius)
+            {
+                UnclaimSpot(futureRoadSpot);
+            }
+        }
+
+        if (previousRoadSpot != null)
+        {
+            var distanceFromPreviousSpot =
+                Math.Abs(carMovementOrders[0].StartPosition.Offset - currentPosition.Offset);
+            if (distanceFromPreviousSpot > ReserveRadius)
+            {
+                UnclaimSpot(previousRoadSpot);
+            }
+        }
+        
+        
+    }
+
+    private bool ShouldClaimFutureSpot(List<CarMovement> carMovementOrders)
+    {
+        if (carMovementOrders.Count <= 1)
+            return false;
+        var distanceFromFutureSpot =
+            Math.Abs(carMovementOrders[0].EndPosition.Offset - currentPosition.Offset);
+        return distanceFromFutureSpot <= ReserveRadius;
+    }
+
+    private ReservedCarSpot GetFutureSpot(List<CarMovement> carMovementOrders)
+    {
+        var futureRoad = carMovementOrders[1].GetRoad();
+        var spotToClaim = new ReservedCarSpot(this, carMovementOrders[1].StartPosition.Offset, ReserveRadius,
+            futureRoad, carMovementOrders[1].GetDirection());
+        return spotToClaim;   
+    }
+
+    
+    public static List<CarMovement>? FindShortestPath(Position startPosition, Position endPosition, double currentPathLength = 0, int iterations = 0,Dictionary<Position,double>? shortestDistances = null)
     {
         if (startPosition.Road == endPosition.Road) 
             return new List<CarMovement> {new(startPosition, endPosition)};
@@ -112,6 +229,6 @@ public partial class Car : PathFollow3D
             );
 
         var enumeratedPaths = paths.ToList();
-        return enumeratedPaths.Count == 0 ? null : enumeratedPaths.MinBy(tuple => tuple.pathLength).path;
+        return enumeratedPaths.IsEmpty() ? null : enumeratedPaths.MinBy(tuple => tuple.pathLength).path;
     }
 }

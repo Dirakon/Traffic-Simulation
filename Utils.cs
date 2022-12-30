@@ -12,4 +12,8 @@ internal static class Utils
     {
         return enumerable.Where(e => e != null).Select(e => e!);
     }
+    public static bool IsEmpty<T>(this IEnumerable<T?> enumerable)
+    {
+        return !enumerable.Any();
+    }
 }

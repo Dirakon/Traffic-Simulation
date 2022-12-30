@@ -8,6 +8,8 @@ public partial class Road : Path3D
 
     public List<Vector3> points;
 
+    public List<ReservedCarSpot> ReservedCarSpots = new List<ReservedCarSpot>();
+
     // Is initialized in Main
     public List<RoadIntersection> intersectionsWithOtherRoads;
     

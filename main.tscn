@@ -15,17 +15,77 @@ transform = Transform3D(1, 0, 0, 0, 0.83239, 0.554191, 0, -0.554191, 0.83239, 0,
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="Camera3D"]
 
 [node name="road" parent="." instance=ExtResource("1_rcmr0")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -15.2038)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -12.9995)
 
 [node name="car" parent="road" instance=ExtResource("2_1e0e7")]
 transform = Transform3D(0.592264, -5.33982e-05, 0.805744, 3.63798e-12, 1, 6.62719e-05, -0.805744, -3.92504e-05, 0.592263, 0.0687756, 0.5, -6.74271)
 _inEditorEndPosition = ExtResource("3_n1ced")
 speed = 10.0
 
+[node name="car2" parent="road" instance=ExtResource("2_1e0e7")]
+transform = Transform3D(0.592264, -5.33982e-05, 0.805744, 3.63798e-12, 1, 6.62719e-05, -0.805744, -3.92504e-05, 0.592263, 0.0687756, 0.5, -6.74271)
+_inEditorEndPosition = ExtResource("3_n1ced")
+speed = 10.0
+
+[node name="car3" parent="road" instance=ExtResource("2_1e0e7")]
+transform = Transform3D(0.592264, -5.33982e-05, 0.805744, 3.63798e-12, 1, 6.62719e-05, -0.805744, -3.92504e-05, 0.592263, 0.0687756, 0.5, -6.74271)
+_inEditorEndPosition = ExtResource("3_n1ced")
+speed = 10.0
+
+[node name="car4" parent="road" instance=ExtResource("2_1e0e7")]
+transform = Transform3D(0.592264, -5.33982e-05, 0.805744, 3.63798e-12, 1, 6.62719e-05, -0.805744, -3.92504e-05, 0.592263, 0.0687756, 0.5, -6.74271)
+_inEditorEndPosition = ExtResource("3_n1ced")
+speed = 10.0
+
+[node name="car5" parent="road" instance=ExtResource("2_1e0e7")]
+transform = Transform3D(0.592264, -5.33982e-05, 0.805744, 3.63798e-12, 1, 6.62719e-05, -0.805744, -3.92504e-05, 0.592263, 0.0687756, 0.5, -6.74271)
+_inEditorEndPosition = ExtResource("3_n1ced")
+speed = 10.0
+
+[node name="car6" parent="road" instance=ExtResource("2_1e0e7")]
+transform = Transform3D(0.592264, -5.33982e-05, 0.805744, 3.63798e-12, 1, 6.62719e-05, -0.805744, -3.92504e-05, 0.592263, 0.0687756, 0.5, -6.74271)
+_inEditorEndPosition = ExtResource("3_n1ced")
+speed = 10.0
+
+[node name="car7" parent="road" instance=ExtResource("2_1e0e7")]
+transform = Transform3D(0.592264, -5.33982e-05, 0.805744, 3.63798e-12, 1, 6.62719e-05, -0.805744, -3.92504e-05, 0.592263, 0.0687756, 0.5, -6.74271)
+_inEditorEndPosition = ExtResource("3_n1ced")
+speed = 10.0
+
 [node name="road2" parent="." instance=ExtResource("1_rcmr0")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 7.68047)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.333524, 0, 5.15471)
 
 [node name="car" parent="road2" instance=ExtResource("2_1e0e7")]
+transform = Transform3D(0.592264, -5.33982e-05, 0.805744, 3.63798e-12, 1, 6.62719e-05, -0.805744, -3.92504e-05, 0.592263, 0.0687756, 0.5, -6.74271)
+_inEditorEndPosition = ExtResource("3_n1ced")
+speed = 10.0
+
+[node name="car2" parent="road2" instance=ExtResource("2_1e0e7")]
+transform = Transform3D(0.592264, -5.33982e-05, 0.805744, 3.63798e-12, 1, 6.62719e-05, -0.805744, -3.92504e-05, 0.592263, 0.0687756, 0.5, -6.74271)
+_inEditorEndPosition = ExtResource("3_n1ced")
+speed = 10.0
+
+[node name="car3" parent="road2" instance=ExtResource("2_1e0e7")]
+transform = Transform3D(0.592264, -5.33982e-05, 0.805744, 3.63798e-12, 1, 6.62719e-05, -0.805744, -3.92504e-05, 0.592263, 0.0687756, 0.5, -6.74271)
+_inEditorEndPosition = ExtResource("3_n1ced")
+speed = 10.0
+
+[node name="car4" parent="road2" instance=ExtResource("2_1e0e7")]
+transform = Transform3D(0.592264, -5.33982e-05, 0.805744, 3.63798e-12, 1, 6.62719e-05, -0.805744, -3.92504e-05, 0.592263, 0.0687756, 0.5, -6.74271)
+_inEditorEndPosition = ExtResource("3_n1ced")
+speed = 10.0
+
+[node name="car5" parent="road2" instance=ExtResource("2_1e0e7")]
+transform = Transform3D(0.592264, -5.33982e-05, 0.805744, 3.63798e-12, 1, 6.62719e-05, -0.805744, -3.92504e-05, 0.592263, 0.0687756, 0.5, -6.74271)
+_inEditorEndPosition = ExtResource("3_n1ced")
+speed = 10.0
+
+[node name="car6" parent="road2" instance=ExtResource("2_1e0e7")]
+transform = Transform3D(0.592264, -5.33982e-05, 0.805744, 3.63798e-12, 1, 6.62719e-05, -0.805744, -3.92504e-05, 0.592263, 0.0687756, 0.5, -6.74271)
+_inEditorEndPosition = ExtResource("3_n1ced")
+speed = 10.0
+
+[node name="car7" parent="road2" instance=ExtResource("2_1e0e7")]
 transform = Transform3D(0.592264, -5.33982e-05, 0.805744, 3.63798e-12, 1, 6.62719e-05, -0.805744, -3.92504e-05, 0.592263, 0.0687756, 0.5, -6.74271)
 _inEditorEndPosition = ExtResource("3_n1ced")
 speed = 10.0

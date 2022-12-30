@@ -1,3 +1,4 @@
+using System;
 using Godot;
 
 public record struct CarMovement
@@ -24,5 +25,15 @@ public record struct CarMovement
     {
         StartPosition = this.StartPosition;
         EndPosition = this.EndPosition;
+    }
+
+    public int GetDirection()
+    {
+        return Math.Sign(EndPosition.Offset - StartPosition.Offset);
+    }
+
+    public Road GetRoad()
+    {
+        return StartPosition.Road;
     }
 }
