@@ -59,4 +59,9 @@ public partial class Road : Path3D
     {
         
     }
+
+    public double GetMaxOffset()
+    {
+        return Curve.GetBakedLength();
+    }
 }

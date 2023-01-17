@@ -41,6 +41,11 @@ public partial class Car : PathFollow3D
         //GD.Print($"{Name} on the road! THe direction is {direction}");
     }
 
+    private void TakeAppropriateRoadSide(int direction)
+    {
+        HOffset = direction == -1 ? NegativeDirectionHOffset : PositiveDirectionHOffset;
+    }
+
     private bool CanClaimSpot(ReservedCarSpot potentialSpot)
     {
         return potentialSpot.RoadToReserve.ReservedCarSpots.All(spot => 
@@ -86,7 +91,7 @@ public partial class Car : PathFollow3D
         if (currentPath == null || currentPath.IsEmpty())
         {
             // TODO: remove this hardcoded path to replace with something dynamic and random
-            currentPath = FindShortestPath(currentPosition, endPosition.Value);
+            currentPath = FindShortestPath(currentPosition, Main.GetRandomPosition());
             return;
         }
         
@@ -135,17 +140,21 @@ public partial class Car : PathFollow3D
             }
             
         }
+        else
+        {
+            TakeAppropriateRoadSide(newDirection);
+        }
     }
 
     private void RemoveInvalidReservedSpots(List<CarMovement> carMovementOrders)
     {
         var currentRoadSpot = ReservedCarSpots
-            .FirstOrDefault(spot=>spot.RoadToReserve==carMovementOrders[0].GetRoad());
+            .SingleOrDefault(spot=>spot.RoadToReserve==carMovementOrders[0].GetRoad());
         var futureRoadSpot = carMovementOrders.Count <= 1 ?null:
             ReservedCarSpots
-                .FirstOrDefault(spot=>spot.RoadToReserve==carMovementOrders[1].GetRoad());;
+                .SingleOrDefault(spot=>spot.RoadToReserve==carMovementOrders[1].GetRoad());;
         var previousRoadSpot = ReservedCarSpots.
-            FirstOrDefault(spot=> spot != currentRoadSpot && spot != futureRoadSpot);
+            SingleOrDefault(spot=> spot != currentRoadSpot && spot != futureRoadSpot);
         if (futureRoadSpot != null)
         {
             var distanceFromFutureSpot =
@@ -158,6 +167,7 @@ public partial class Car : PathFollow3D
 
         if (previousRoadSpot != null)
         {
+            // TODO: fix a potential bug where if a road changes every (0; ReserveRadius), this previousRoadSpot won't be removed
             var distanceFromPreviousSpot =
                 Math.Abs(carMovementOrders[0].StartPosition.Offset - currentPosition.Offset);
             if (distanceFromPreviousSpot > ReserveRadius)
@@ -166,11 +176,15 @@ public partial class Car : PathFollow3D
             }
         }
         
-        
+       // GD.Print((previousRoadSpot!=null,currentRoadSpot!=null,futureRoadSpot!=null));
     }
 
     private bool ShouldClaimFutureSpot(List<CarMovement> carMovementOrders)
     {
+        if (carMovementOrders[0].EndPosition.Road != currentPosition.Road)
+        {
+            GD.PushError("Unexpected behaviour! Car order list contains non-current road as the first order");
+        }
         if (carMovementOrders.Count <= 1)
             return false;
         var distanceFromFutureSpot =

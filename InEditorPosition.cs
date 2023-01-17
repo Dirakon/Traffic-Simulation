@@ -7,6 +7,7 @@ public partial class InEditorPosition : Resource
 
     public Position GetPosition(Node node)
     {
-        return new Position(offset,node.GetNode<Road>(road) );
+        var actualRode = node.GetNode<Road>(road);
+        return new Position(offset%actualRode.GetMaxOffset(),actualRode);
     }
 }
