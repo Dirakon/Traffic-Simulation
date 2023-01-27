@@ -10,6 +10,8 @@ h_offset = -0.75
 v_offset = 0.5
 script = ExtResource("1_tpsqp")
 PositiveDirectionHOffset = -1.0
+PositiveParkedHOffset = -1.5
+NegativeParkedHOffset = 0.5
 speed = 100.0
 ReserveRadius = 1.5
 

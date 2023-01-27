@@ -1,4 +1,4 @@
-public record class RoadIntersection(double OurOffset, double TheirOffset, Road OurRoad, Road OtherRoad)
+public record class RoadIntersection(double OurOffset, double TheirOffset, Road OurRoad, Road OtherRoad, RoadIntersectionType IntersectionType)
 {
     public Position AsOtherRoadPosition()
     {
@@ -8,4 +8,11 @@ public record class RoadIntersection(double OurOffset, double TheirOffset, Road 
     {
         return new Position( OurOffset,OurRoad);
     }
+}
+
+
+public enum RoadIntersectionType
+{
+    NoControl,
+    TrafficLight
 }

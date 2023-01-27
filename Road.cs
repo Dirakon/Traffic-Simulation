@@ -41,7 +41,8 @@ public partial class Road : Path3D
             GetOffsetOfGivenGlobalPosition(intersectionPosition),
             otherRoad.GetOffsetOfGivenGlobalPosition(intersectionPosition),
             this,
-            otherRoad
+            otherRoad,
+            RoadIntersectionType.NoControl
         )).ToList();
     }
 

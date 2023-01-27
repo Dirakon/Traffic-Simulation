@@ -3,3 +3,6 @@
 
 # IDE specific ignores
 .idea
+
+# Project specific settings
+videos/

@@ -7,7 +7,7 @@ using Godot;
 public partial class Car : PathFollow3D
 {
     [Export] public InEditorPosition _inEditorEndPosition;
-    [Export] public float PositiveDirectionHOffset, NegativeDirectionHOffset;
+    [Export] public float PositiveDirectionHOffset, NegativeDirectionHOffset, PositiveParkedHOffset, NegativeParkedHOffset;
     private Position currentPosition;
     public Position? endPosition;
     private List<CarMovement>? currentPath;
@@ -41,6 +41,33 @@ public partial class Car : PathFollow3D
         //GD.Print($"{Name} on the road! THe direction is {direction}");
     }
 
+    private void Park()
+    {
+        
+        const double epsilon = 0.0001;
+        if (Math.Abs(HOffset - PositiveDirectionHOffset) < epsilon)
+        {
+            HOffset = PositiveParkedHOffset;
+        }
+        if (Math.Abs(HOffset - NegativeDirectionHOffset) < epsilon)
+        {
+            HOffset = NegativeParkedHOffset;
+        }
+    }
+
+    private void UnPark()
+    {
+        
+        const double epsilon = 0.0001;
+        if (Math.Abs(HOffset - PositiveParkedHOffset) < epsilon)
+        {
+            HOffset = PositiveDirectionHOffset;
+        }
+        if (Math.Abs(HOffset - NegativeParkedHOffset) < epsilon)
+        {
+            HOffset =  NegativeDirectionHOffset;
+        }
+    }
     private void TakeAppropriateRoadSide(int direction)
     {
         HOffset = direction == -1 ? NegativeDirectionHOffset : PositiveDirectionHOffset;
@@ -69,7 +96,7 @@ public partial class Car : PathFollow3D
         ReservedCarSpots.Add(spot);
     }
 
-    private void UnclaimSpot(ReservedCarSpot spot)
+    private void UnClaimSpot(ReservedCarSpot spot)
     {
         ReservedCarSpots.Remove(spot);
         spot.RoadToReserve.ReservedCarSpots.Remove(spot);
@@ -90,8 +117,19 @@ public partial class Car : PathFollow3D
     {
         if (currentPath == null || currentPath.IsEmpty())
         {
-            // TODO: remove this hardcoded path to replace with something dynamic and random
             currentPath = FindShortestPath(currentPosition, Main.GetRandomPosition());
+            if (currentPath == null || currentPath.IsEmpty() || ReservedCarSpots.IsEmpty())
+                return;
+            var currentRoadSpot = ReservedCarSpots
+                .Single(spot=>spot.RoadToReserve==currentPath[0].GetRoad());
+            
+            // Check if the first order is to change the lane on the current road
+            if (currentRoadSpot.Direction != currentPath[0].GetDirection())
+            {
+                UnClaimSpot(currentRoadSpot);
+                Park();
+            }
+            
             return;
         }
         
@@ -108,6 +146,8 @@ public partial class Car : PathFollow3D
         var newDirection = Math.Sign(currentGoal.Offset - newOffset);
 
         var newSpot = new ReservedCarSpot(this, newOffset, ReserveRadius, currentGoal.Road, currentPath[0].GetDirection());
+        
+        
         if (!CanClaimSpot(newSpot))
             return;
 
@@ -120,6 +160,7 @@ public partial class Car : PathFollow3D
         }
 
         ClaimSpot(newSpot);
+        UnPark();
         currentPosition.Offset = newOffset;
         Progress = (float) currentPosition.Offset;
 
@@ -161,7 +202,7 @@ public partial class Car : PathFollow3D
                 Math.Abs(carMovementOrders[0].EndPosition.Offset - currentPosition.Offset);
             if (distanceFromFutureSpot > ReserveRadius)
             {
-                UnclaimSpot(futureRoadSpot);
+                UnClaimSpot(futureRoadSpot);
             }
         }
 
@@ -172,11 +213,9 @@ public partial class Car : PathFollow3D
                 Math.Abs(carMovementOrders[0].StartPosition.Offset - currentPosition.Offset);
             if (distanceFromPreviousSpot > ReserveRadius)
             {
-                UnclaimSpot(previousRoadSpot);
+                UnClaimSpot(previousRoadSpot);
             }
         }
-        
-       // GD.Print((previousRoadSpot!=null,currentRoadSpot!=null,futureRoadSpot!=null));
     }
 
     private bool ShouldClaimFutureSpot(List<CarMovement> carMovementOrders)
@@ -206,10 +245,7 @@ public partial class Car : PathFollow3D
         if (startPosition.Road == endPosition.Road) 
             return new List<CarMovement> {new(startPosition, endPosition)};
         
-        if (shortestDistances == null)
-        {
-            shortestDistances = new Dictionary<Position, double>();
-        }
+        shortestDistances ??= new Dictionary<Position, double>();
 
         if (shortestDistances.TryGetValue(startPosition,out var recordedPathLength))
         {
