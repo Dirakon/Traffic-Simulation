@@ -2,12 +2,14 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Godot;
 
 public partial class Car : PathFollow3D
 {
     [Export] public InEditorPosition _inEditorEndPosition;
     [Export] public float PositiveDirectionHOffset, NegativeDirectionHOffset, PositiveParkedHOffset, NegativeParkedHOffset;
+    [Export] public PackedScene CarVisualsPrefab;
     private Position currentPosition;
     public Position? endPosition;
     private List<CarMovement>? currentPath;
@@ -16,6 +18,16 @@ public partial class Car : PathFollow3D
     private List<ReservedCarSpot> ReservedCarSpots = new List<ReservedCarSpot>();
 
     [Export] private double ReserveRadius;
+
+    public void CreateVisuals()
+    {
+        
+        var visuals = CarVisualsPrefab.Instantiate() as CarVisuals;
+        visuals.Init(this);
+        GetTree().CurrentScene.AddChild(visuals);
+        visuals.GlobalPosition = GlobalPosition;
+    }
+    
     // Called when the node enters the scene tree for the first time.
     public override void _Ready()
     {
@@ -24,6 +36,8 @@ public partial class Car : PathFollow3D
         var road = GetParent() as Road ?? throw new InvalidOperationException($"{Name} does not have initial road as the parent");
         var offset = road.GetOffsetOfGivenGlobalPosition(GlobalPosition);
         currentPosition = new Position(offset,road);
+
+        CallDeferred(MethodName.CreateVisuals);
     }
 
     private void GetOnTheRoad(Position position, int direction)
