@@ -41,10 +41,11 @@ blend_shape_mode = 0
 shadow_mesh = SubResource("ArrayMesh_3svcv")
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_knlyk"]
+resource_local_to_scene = true
 resource_name = "Main"
 cull_mode = 2
 vertex_color_use_as_albedo = true
-albedo_color = Color(0.25261, 0.292011, 0.32666, 1)
+albedo_color = Color(2.64719e-07, 0.326818, 0.360662, 1)
 roughness = 0.4
 emission_enabled = true
 
@@ -99,6 +100,7 @@ _surfaces = [{
 blend_shape_mode = 0
 
 [sub_resource type="ArrayMesh" id="ArrayMesh_eyotx"]
+resource_local_to_scene = true
 resource_name = "car_Cube"
 _surfaces = [{
 "aabb": AABB(-1.99124, -3.3555, -6.27041, 3.98248, 4.41072, 12.9659),

@@ -6,7 +6,7 @@ public partial class CarVisuals : CharacterBody3D
 	private Car CarToFollow;
 
 	private float Acceleration = 5000f,
-		RotationSpeed = 120f,
+		RotationSpeed = 20f,
 		DifferenceTreshold = 0.5f,
 		VelocityDissapearanceFactor = 1f,
 		TurboDroppoff = 1f,
@@ -21,16 +21,6 @@ public partial class CarVisuals : CharacterBody3D
 	// Called every frame. 'delta' is the elapsed time since the previous frame.
 	public override void _Process(double delta)
 	{
-		//
-		// var PreviuosScale = Scale;
-		// var global_pos = GlobalPosition;
-		// var player_pos = CarToFollow.GlobalPosition;
-		// var wtransform = GlobalTransform.LookingAt(new Vector3(player_pos.X, global_pos.Y, player_pos.Z), Vector3.Up);
-		//
-		// var wrotation = new Quaternion(GlobalTransform.Basis).Normalized().Slerp(new Quaternion(wtransform.Basis).Normalized(), (float)(RotationSpeed*delta));
-		//
-		// GlobalTransform = new Transform3D(new Basis(wrotation), GlobalTransform.Origin);
-		// Scale = PreviuosScale;
 	}
 
 	public override void _PhysicsProcess(double delta)
@@ -82,5 +72,16 @@ public partial class CarVisuals : CharacterBody3D
 	public void Init(Car car)
 	{
 		CarToFollow = car;
+
+		var mesh = GetNode<MeshInstance3D>("Cube").Mesh;
+		
+		var mainMaterial = mesh.SurfaceGetMaterial(0).Duplicate(subresources: true) as StandardMaterial3D;
+		mainMaterial.AlbedoColor = Color.Color8(
+			(byte)Random.Shared.NextInt64(256),
+			(byte)Random.Shared.NextInt64(256),
+			(byte)Random.Shared.NextInt64(256),
+			(byte)Random.Shared.NextInt64(256)
+			);
+		mesh.SurfaceSetMaterial(0,mainMaterial);
 	}
 }
