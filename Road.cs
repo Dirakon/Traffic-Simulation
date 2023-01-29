@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Godot;
@@ -11,7 +12,7 @@ public partial class Road : Path3D
     public List<ReservedCarSpot> ReservedCarSpots = new List<ReservedCarSpot>();
 
     // Is initialized in Main
-    public List<RoadIntersection> intersectionsWithOtherRoads;
+    public List<RoadIntersection> intersectionsWithOtherRoads = new List<RoadIntersection>();
     
     // Called when the node enters the scene tree for the first time.
     public override void _Ready()
@@ -20,9 +21,20 @@ public partial class Road : Path3D
         lines = points.Zip(points.Skip(1)).ToList();
     }
 
-    public double GetOffsetOfGivenGlobalPosition(Vector3 givenGlobalPosition)
+    public bool IsEnclosed()
+    {
+        double epsilon = 0.001;
+        return Math.Abs(points[0].DistanceTo(points[^1])) <= epsilon;
+    }
+    
+    public double PositionToOffset(Vector3 givenGlobalPosition)
     {
         return Curve.GetClosestOffset(givenGlobalPosition - GlobalPosition);
+    }
+
+    public Vector3 OffsetToPosition(double givenOffset)
+    {
+        return Curve.SampleBaked((float)givenOffset);
     }
 
     public List<RoadIntersection> GetIntersectionsWith(Road otherRoad)
@@ -37,13 +49,12 @@ public partial class Road : Path3D
                 otherRoad.lines.Select(
                     theirSegment => GetTwoSegmentIntersection(ourSegment, theirSegment)
                 ).FirstOrDefault(intersection => intersection != null)
-        ).NotNull().Select(intersectionPosition => new RoadIntersection(
-            GetOffsetOfGivenGlobalPosition(intersectionPosition),
-            otherRoad.GetOffsetOfGivenGlobalPosition(intersectionPosition),
+        ).NotNull().Select(intersectionPosition => new UncontrolledIntersection(
             this,
+            PositionToOffset(intersectionPosition),
             otherRoad,
-            RoadIntersectionType.NoControl
-        )).ToList();
+            otherRoad.PositionToOffset(intersectionPosition)
+        ) as RoadIntersection).ToList();
     }
 
     private Vector3? GetTwoSegmentIntersection((Vector3, Vector3) segment1, (Vector3, Vector3) segment2)

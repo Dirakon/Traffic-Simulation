@@ -26,9 +26,21 @@ public partial class Main : Node3D
         roads = inEditorRoads.Select(GetNode<Road>).ToList();
         roads.ForEach(road =>
         {
-            road.intersectionsWithOtherRoads = roads.Where(otherRoad => otherRoad != road).SelectMany(
-                road.GetIntersectionsWith
-            ).ToList();
+            roads.ForEach(otherRoad =>
+            {
+                if (otherRoad == road)
+                    return;
+                var intersectionsAlreadyFound =
+                    road.intersectionsWithOtherRoads
+                        .Any(readyIntersection => readyIntersection.GetRoadOppositeFrom(road) == otherRoad);
+                if (intersectionsAlreadyFound)
+                    return;
+
+                var intersections = road.GetIntersectionsWith(otherRoad);
+                road.intersectionsWithOtherRoads.AddRange(intersections);
+                otherRoad.intersectionsWithOtherRoads.AddRange(intersections);
+
+            });
         });
     }
 

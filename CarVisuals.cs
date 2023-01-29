@@ -7,7 +7,7 @@ public partial class CarVisuals : CharacterBody3D
 
 	private float Acceleration = 5000f,
 		RotationSpeed = 20f,
-		DifferenceTreshold = 0.5f,
+		DifferenceTreshold = 0.1f,
 		VelocityDissapearanceFactor = 1f,
 		TurboDroppoff = 1f,
 		TurboModifier = 5f;

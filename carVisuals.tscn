@@ -147,26 +147,26 @@ transform = Transform3D(0.087, -5.7809e-12, -9.60309e-23, 5.7809e-12, 0.087, 4.3
 script = ExtResource("1_4och0")
 
 [node name="Cylinder" type="MeshInstance3D" parent="."]
-transform = Transform3D(0, 0.221843, 0, -0.552582, 0, 0, 0, 0, 0.552582, 2.3321, -0.529485, -3.2229)
+transform = Transform3D(-7.3435e-11, -0.221843, -4.83083e-08, -0.552582, 2.94817e-11, 5.50762e-11, -5.50762e-11, 1.93941e-08, -0.552582, -2.32347, -0.529485, 3.3498)
 mesh = SubResource("ArrayMesh_fyi4b")
 skeleton = NodePath("")
 
 [node name="Cylinder001" type="MeshInstance3D" parent="."]
-transform = Transform3D(0, 0.221843, 0, -0.552582, 0, 0, 0, 0, 0.552582, -2.32131, -0.529485, -3.2229)
+transform = Transform3D(-7.3435e-11, -0.221843, -4.83083e-08, -0.552582, 2.94817e-11, 5.50762e-11, -5.50762e-11, 1.93941e-08, -0.552582, 2.32994, -0.529485, 3.3498)
 mesh = SubResource("ArrayMesh_fyi4b")
 skeleton = NodePath("")
 
 [node name="Cylinder002" type="MeshInstance3D" parent="."]
-transform = Transform3D(0, 0.221843, 0, -0.552582, 0, 0, 0, 0, 0.552582, 2.3321, -0.529485, 3.38152)
+transform = Transform3D(-7.3435e-11, -0.221843, -4.83083e-08, -0.552582, 2.94817e-11, 5.50762e-11, -5.50762e-11, 1.93941e-08, -0.552582, -2.32347, -0.529485, -3.25462)
 mesh = SubResource("ArrayMesh_fyi4b")
 skeleton = NodePath("")
 
 [node name="Cylinder003" type="MeshInstance3D" parent="."]
-transform = Transform3D(0, 0.221843, 0, -0.552582, 0, 0, 0, 0, 0.552582, -2.32131, -0.529485, 3.38152)
+transform = Transform3D(-7.3435e-11, -0.221843, -4.83083e-08, -0.552582, 2.94817e-11, 5.50762e-11, -5.50762e-11, 1.93941e-08, -0.552582, 2.32994, -0.529485, -3.25462)
 mesh = SubResource("ArrayMesh_fyi4b")
 skeleton = NodePath("")
 
 [node name="Cube" type="MeshInstance3D" parent="."]
-transform = Transform3D(-1.34484, 0.0150748, -0.0163024, -0.023835, -0.858921, 0.00758143, 0.0253145, -0.00786743, -0.858934, 0, 0, 0)
+transform = Transform3D(1.34484, -0.0150748, 0.0163025, -0.023835, -0.858921, 0.00758143, -0.0253146, 0.00786743, 0.858934, 0.00863199, 0, 0.126896)
 mesh = SubResource("ArrayMesh_eyotx")
 skeleton = NodePath("")

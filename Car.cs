@@ -34,7 +34,7 @@ public partial class Car : PathFollow3D
         endPosition = _inEditorEndPosition.GetPosition(this);
 
         var road = GetParent() as Road ?? throw new InvalidOperationException($"{Name} does not have initial road as the parent");
-        var offset = road.GetOffsetOfGivenGlobalPosition(GlobalPosition);
+        var offset = road.PositionToOffset(GlobalPosition);
         currentPosition = new Position(offset,road);
 
         CallDeferred(MethodName.CreateVisuals);
@@ -254,7 +254,7 @@ public partial class Car : PathFollow3D
     }
 
     
-    public static List<CarMovement>? FindShortestPath(Position startPosition, Position endPosition, double currentPathLength = 0, int iterations = 0,Dictionary<Position,double>? shortestDistances = null)
+    public static List<CarMovement>? FindShortestPath(Position startPosition, Position endPosition, double currentPathLength = 0,Dictionary<Position,double>? shortestDistances = null)
     {
         if (startPosition.Road == endPosition.Road) 
             return new List<CarMovement> {new(startPosition, endPosition)};
@@ -279,17 +279,22 @@ public partial class Car : PathFollow3D
         var paths = startPosition.Road.intersectionsWithOtherRoads
             .Select(intersection =>
             {
-                var traveledDistance = Math.Abs(intersection.OurOffset - startPosition.Offset);
-                var pathFromIntersection = FindShortestPath(intersection.AsOtherRoadPosition(), endPosition,
-                    currentPathLength + traveledDistance, iterations+1,shortestDistances);
-                (RoadIntersection intersection, List<CarMovement> pathFromIntersection, double pathLength)? tuple =
-                    pathFromIntersection == null ? null : (intersection, pathFromIntersection, currentPathLength + traveledDistance);
+                var currentRoad = startPosition.Road;
+                var nextRoad = intersection.GetRoadOppositeFrom(currentRoad);
+                var traveledDistance = Math.Abs(intersection.GetOffsetOfRoad(currentRoad) - startPosition.Offset);
+
+                var currentEnd = new Position(intersection.GetOffsetOfRoad(currentRoad), currentRoad);
+                var nextStart = new Position(intersection.GetOffsetOfRoad(nextRoad), nextRoad);
+                var pathFromIntersection = FindShortestPath(nextStart, endPosition,
+                    currentPathLength + traveledDistance,shortestDistances);
+                (RoadIntersection intersection,Position currentEnd, List<CarMovement> pathFromIntersection, double pathLength)? tuple =
+                    pathFromIntersection == null ? null : (intersection,currentEnd, pathFromIntersection, currentPathLength + traveledDistance);
                 return tuple;
             })
             .NotNull()
             .Select(tuple =>
                 (tuple.pathLength,path:tuple.pathFromIntersection
-                    .Prepend(new CarMovement(startPosition, tuple.intersection.AsOurRoadPosition())).ToList())
+                    .Prepend(new CarMovement(startPosition, tuple.currentEnd)).ToList())
             );
 
         var enumeratedPaths = paths.ToList();
