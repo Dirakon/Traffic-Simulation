@@ -6,8 +6,8 @@ using Godot.Collections;
 
 public partial class Main : Node3D
 {
-    [Export] private Array<NodePath> inEditorRoads;
     private static Main Instance;
+    [Export] private Array<NodePath> inEditorRoads;
     private List<Road> roads;
 
     public static Position GetRandomPosition()
@@ -18,7 +18,7 @@ public partial class Main : Node3D
             randomRoad
         );
     }
-    
+
     // Called when the node enters the scene tree for the first time.
     public override void _Ready()
     {
@@ -39,7 +39,6 @@ public partial class Main : Node3D
                 var intersections = road.GetIntersectionsWith(otherRoad);
                 road.intersectionsWithOtherRoads.AddRange(intersections);
                 otherRoad.intersectionsWithOtherRoads.AddRange(intersections);
-
             });
         });
     }

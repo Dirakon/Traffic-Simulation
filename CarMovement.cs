@@ -3,23 +3,30 @@ using Godot;
 
 public record struct CarMovement
 {
-    public CarMovement(Position StartPosition, Position EndPosition)
+    public CarMovement(Position startPosition, Position endPosition, RoadIntersection? intersectionAtTheEnd)
     {
-        this.StartPosition = StartPosition;
-        this.EndPosition = EndPosition;
-        if (StartPosition.Road != EndPosition.Road)
-        {
+        StartPosition = startPosition;
+        EndPosition = endPosition;
+        IntersectionAtTheEnd = intersectionAtTheEnd;
+
+        if (startPosition.Road != endPosition.Road)
             GD.PushError($"Internal assumption that CarMovement is a path inside a single road is ruined by {this}");
-        }
     }
+
+    public Position StartPosition { get; }
+    public Position EndPosition { get; }
+    public RoadIntersection? IntersectionAtTheEnd { get; }
 
     public override string ToString()
     {
-        return $"From {{{StartPosition}}} to {{{EndPosition}}}";
+        return $"From {{{StartPosition}}} to {{{EndPosition}}}. The direction is {GetDirection()}" +
+               $". The intersection is {{{IntersectionAtTheEnd}}}";
     }
 
-    public Position StartPosition { get;  }
-    public Position EndPosition { get;  }
+    public double GetDistance()
+    {
+        return Math.Abs(EndPosition.Offset - StartPosition.Offset);
+    }
 
     public void Deconstruct(out Position StartPosition, out Position EndPosition)
     {

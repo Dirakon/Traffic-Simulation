@@ -5,15 +5,14 @@ using Godot;
 
 public partial class Road : Path3D
 {
+    // Is initialized in Main
+    public List<RoadIntersection> intersectionsWithOtherRoads = new();
     public List<(Vector3, Vector3)> lines;
 
     public List<Vector3> points;
 
-    public List<ReservedCarSpot> ReservedCarSpots = new List<ReservedCarSpot>();
+    public List<ReservedCarSpot> ReservedCarSpots = new();
 
-    // Is initialized in Main
-    public List<RoadIntersection> intersectionsWithOtherRoads = new List<RoadIntersection>();
-    
     // Called when the node enters the scene tree for the first time.
     public override void _Ready()
     {
@@ -23,10 +22,10 @@ public partial class Road : Path3D
 
     public bool IsEnclosed()
     {
-        double epsilon = 0.001;
+        var epsilon = 0.001;
         return Math.Abs(points[0].DistanceTo(points[^1])) <= epsilon;
     }
-    
+
     public double PositionToOffset(Vector3 givenGlobalPosition)
     {
         return Curve.GetClosestOffset(givenGlobalPosition - GlobalPosition);
@@ -34,7 +33,7 @@ public partial class Road : Path3D
 
     public Vector3 OffsetToPosition(double givenOffset)
     {
-        return Curve.SampleBaked((float)givenOffset);
+        return Curve.SampleBaked((float) givenOffset);
     }
 
     public List<RoadIntersection> GetIntersectionsWith(Road otherRoad)
@@ -44,6 +43,7 @@ public partial class Road : Path3D
             GD.PushError($"A road {Name} is asked to find intersections with itself!");
             return null;
         }
+
         return lines.Select(
             ourSegment =>
                 otherRoad.lines.Select(
@@ -69,7 +69,6 @@ public partial class Road : Path3D
     // Called every frame. 'delta' is the elapsed time since the previous frame.
     public override void _Process(double delta)
     {
-        
     }
 
     public double GetMaxOffset()
