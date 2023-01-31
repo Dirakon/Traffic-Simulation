@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Godot;
 
 internal static class PathUtils
 {
@@ -91,6 +92,8 @@ internal static class PathUtils
     public static List<CarMovement>? FindTheShortestPathTo(this Position startPosition, Position endPosition, double reserveRadius)
     {
         var path = FindShortestPath(startPosition, endPosition);
+        GD.Print("PRE-READY PATH:");
+        path.ForEach(el=>GD.Print(el.ToString()));
         if (path != null)
             path = SplitPathByIntersections(path, reserveRadius);
         return path;

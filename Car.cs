@@ -36,7 +36,8 @@ public partial class Car : PathFollow3D
         var offset = road.PositionToOffset(GlobalPosition);
         var currentPosition = new Position(offset, road);
         state = new CarParkedSeekingNewPath(currentPosition);
-
+        GetOnTheRoad(currentPosition, 1);
+        Park();
         CallDeferred(MethodName.CreateVisuals);
     }
 
@@ -61,14 +62,24 @@ public partial class Car : PathFollow3D
     {
         const double epsilon = 0.0001;
         if (Math.Abs(HOffset - PositiveDirectionHOffset) < epsilon) HOffset = PositiveParkedHOffset;
-        if (Math.Abs(HOffset - NegativeDirectionHOffset) < epsilon) HOffset = NegativeParkedHOffset;
+        else if (Math.Abs(HOffset - NegativeDirectionHOffset) < epsilon) HOffset = NegativeParkedHOffset;
+        else throw new ArgumentOutOfRangeException();
+    }
+
+    private int GetParkedDirection()
+    {
+        const double epsilon = 0.0001;
+        if (Math.Abs(HOffset - PositiveParkedHOffset) < epsilon) return 1;
+        if (Math.Abs(HOffset - NegativeParkedHOffset) < epsilon) return -1;
+        throw new ArgumentOutOfRangeException();
     }
 
     private void UnPark()
     {
         const double epsilon = 0.0001;
         if (Math.Abs(HOffset - PositiveParkedHOffset) < epsilon) HOffset = PositiveDirectionHOffset;
-        if (Math.Abs(HOffset - NegativeParkedHOffset) < epsilon) HOffset = NegativeDirectionHOffset;
+        else if (Math.Abs(HOffset - NegativeParkedHOffset) < epsilon) HOffset = NegativeDirectionHOffset;
+        else throw new ArgumentOutOfRangeException();
     }
 
     private void TakeAppropriateRoadSide(int direction)
@@ -78,7 +89,7 @@ public partial class Car : PathFollow3D
 
     private bool TryFindRandomPath(Position currentPosition)
     {
-        currentPath = currentPosition.FindTheShortestPathTo(Main.GetRandomPosition(ReserveRadius), ReserveRadius);
+        currentPath = currentPosition.FindTheShortestPathTo(Main.GetRandomPosition(), ReserveRadius);
         return currentPath is {Count: > 0};
     }
 
@@ -95,7 +106,7 @@ public partial class Car : PathFollow3D
             case CarParkedSeekingNewPath(Position currentPosition):
                 if (TryFindRandomPath(currentPosition))
                 {
-                    GD.Print("PATH:");
+                    GD.Print("READY PATH:");
                     currentPath.ForEach(el=>GD.Print(el.ToString()));
                     var firstOrder = currentPath[0];
                     state = new CarParkedToClaimLane(new ReservedCarSpot(this, firstOrder.StartPosition.Offset,
@@ -115,7 +126,7 @@ public partial class Car : PathFollow3D
                 {
                     return;
                 }
-                if (newDistanceToGoal < ReserveRadius && currentOrder.CorrelatingIntersection != null)
+                if (newDistanceToGoal < RoadIntersection.IntersectionInteractionDistance && currentOrder.CorrelatingIntersection != null)
                 {
                     var roadAfterThis = currentPath[1].GetRoad();
                     var directionAfterThis = currentPath[1].GetDirection();
@@ -161,7 +172,15 @@ public partial class Car : PathFollow3D
                 break;
             case CarParkedToClaimLane(ReservedCarSpot spotToClaim):
                 if (spotToClaim.CanBeClaimed())
-                { 
+                {
+                    var currentDirection = GetParkedDirection();
+                    if (currentDirection != spotToClaim.Direction)
+                    {
+                        // We need to pass through the other lane to reach there
+                        var otherLaneSpot = spotToClaim with {Direction = currentDirection};
+                        if (!otherLaneSpot.CanBeClaimed())
+                            return;
+                    }
                     spotToClaim.RegisterClaim();
                     GetOnTheRoad(spotToClaim.GetPosition(), spotToClaim.Direction);
                     state = new CarMoving(spotToClaim);

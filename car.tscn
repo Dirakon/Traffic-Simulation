@@ -1,4 +1,4 @@
-[gd_scene load_steps=4 format=3]
+[gd_scene load_steps=4 format=3 uid="uid://dx1oldh3juddc"]
 
 [ext_resource type="Script" path="res://Car.cs" id="1_tpsqp"]
 [ext_resource type="PackedScene" uid="uid://dgbx1dp2ykuiw" path="res://carVisuals.tscn" id="2_ueym8"]
@@ -8,14 +8,15 @@
 [node name="car" type="PathFollow3D"]
 transform = Transform3D(0.592279, 0.000605129, 0.805733, -2.91038e-11, 1, -0.000751029, -0.805733, 0.000444819, 0.592278, 0.512753, 0.0045166, -7.34731)
 h_offset = -0.75
-v_offset = 0.5
+v_offset = 0.245
 script = ExtResource("1_tpsqp")
-PositiveDirectionHOffset = -1.0
-PositiveParkedHOffset = -1.5
-NegativeParkedHOffset = 0.5
 CarVisualsPrefab = ExtResource("2_ueym8")
-speed = 100.0
+PositiveDirectionHOffset = -1.0
+NegativeDirectionHOffset = 1.0
+PositiveParkedHOffset = -2.0
+NegativeParkedHOffset = 2.0
 ReserveRadius = 1.5
+speed = 100.0
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="."]
 transform = Transform3D(0.5, 1.45519e-11, 1.49012e-08, 1.45519e-11, 0.5, 1.45519e-11, -1.49012e-08, 1.45519e-11, 0.5, 0, 0, 0)

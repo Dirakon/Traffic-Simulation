@@ -10,7 +10,7 @@ public partial class Main : Node3D
     [Export] private Array<NodePath> inEditorRoads;
     private List<Road> roads;
 
-    public static Position GetRandomPosition(double ReserveRadius)
+    public static Position GetRandomPosition()
     {
         var randomRoad = Instance.roads.Random();
         var potentialPosition =  new Position(
@@ -29,10 +29,10 @@ public partial class Main : Node3D
                 )
                 : Math.Abs(potentialPosition.Offset - intersection.GetOffsetOfRoad(potentialPosition.Road))
         ).Min();
-        if (ReserveRadius >= closestIntersectionDistance)
+        if (RoadIntersection.IntersectionInteractionDistance >= closestIntersectionDistance)
         {
             GD.Print("Tried to generate a position, but it is too close to an intersection!");
-            return GetRandomPosition(ReserveRadius);
+            return GetRandomPosition();
         }
         else
         {
