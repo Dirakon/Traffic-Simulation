@@ -10,13 +10,34 @@ public partial class Main : Node3D
     [Export] private Array<NodePath> inEditorRoads;
     private List<Road> roads;
 
-    public static Position GetRandomPosition()
+    public static Position GetRandomPosition(double ReserveRadius)
     {
         var randomRoad = Instance.roads.Random();
-        return new Position(
+        var potentialPosition =  new Position(
             new Random().NextDouble() * randomRoad.GetMaxOffset(),
             randomRoad
         );
+        if (potentialPosition.Road.intersectionsWithOtherRoads.IsEmpty())
+            return potentialPosition;
+        var closestIntersectionDistance = potentialPosition.Road.intersectionsWithOtherRoads.Select(intersection =>
+            potentialPosition.Road.IsEnclosed()
+                ? Math.Min(
+                    potentialPosition.Road.GetMaxOffset() - Math.Abs(potentialPosition.Offset -
+                                                                     intersection.GetOffsetOfRoad(
+                                                                         potentialPosition.Road)),
+                    Math.Abs(potentialPosition.Offset - intersection.GetOffsetOfRoad(potentialPosition.Road))
+                )
+                : Math.Abs(potentialPosition.Offset - intersection.GetOffsetOfRoad(potentialPosition.Road))
+        ).Min();
+        if (ReserveRadius >= closestIntersectionDistance)
+        {
+            GD.Print("Tried to generate a position, but it is too close to an intersection!");
+            return GetRandomPosition(ReserveRadius);
+        }
+        else
+        {
+            return potentialPosition;
+        }
     }
 
     // Called when the node enters the scene tree for the first time.

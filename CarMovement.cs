@@ -3,11 +3,11 @@ using Godot;
 
 public record struct CarMovement
 {
-    public CarMovement(Position startPosition, Position endPosition, RoadIntersection? intersectionAtTheEnd)
+    public CarMovement(Position startPosition, Position endPosition, RoadIntersection? correlatingIntersection)
     {
         StartPosition = startPosition;
         EndPosition = endPosition;
-        IntersectionAtTheEnd = intersectionAtTheEnd;
+        CorrelatingIntersection = correlatingIntersection;
 
         if (startPosition.Road != endPosition.Road)
             GD.PushError($"Internal assumption that CarMovement is a path inside a single road is ruined by {this}");
@@ -15,12 +15,12 @@ public record struct CarMovement
 
     public Position StartPosition { get; }
     public Position EndPosition { get; }
-    public RoadIntersection? IntersectionAtTheEnd { get; }
+    public RoadIntersection? CorrelatingIntersection { get; }
 
     public override string ToString()
     {
         return $"From {{{StartPosition}}} to {{{EndPosition}}}. The direction is {GetDirection()}" +
-               $". The intersection is {{{IntersectionAtTheEnd}}}";
+               $". The intersection is {{{CorrelatingIntersection}}}";
     }
 
     public double GetDistance()

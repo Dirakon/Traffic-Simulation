@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-internal static class Utils
+internal static class LinqUtils
 {
     public static IEnumerable<T> NotNull<T>(this IEnumerable<T?> enumerable) where T : struct
     {
@@ -28,4 +28,14 @@ internal static class Utils
         if (list.IsEmpty()) throw new ArgumentNullException(nameof(enumerable));
         return list[r.Next(0, list.Count)];
     }
+    
+    public static(IEnumerable<TSource> passed,IEnumerable<TSource> failed) Split<TSource>(
+        this IEnumerable<TSource> source,
+        Func<TSource,bool> predicate)
+    {
+        var lookup = source.ToLookup(predicate);
+        return (passed:lookup[true], failed:lookup[false]);
+    }
+    
+
 }

@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" path="res://Main.cs" id="1_4p6e4"]
 [ext_resource type="PackedScene" uid="uid://c4mvq6fphnisr" path="res://road.tscn" id="1_rcmr0"]
-[ext_resource type="PackedScene" uid="uid://bu323iy4kf115" path="res://car.tscn" id="2_1e0e7"]
+[ext_resource type="PackedScene" path="res://car.tscn" id="2_1e0e7"]
 
 [node name="main" type="Node3D"]
 script = ExtResource("1_4p6e4")
@@ -20,6 +20,31 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -12.9995)
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.333524, 0, 5.15471)
 
 [node name="car4" parent="road2" instance=ExtResource("2_1e0e7")]
+transform = Transform3D(0.592264, -5.33982e-05, 0.805744, 3.63798e-12, 1, 6.62719e-05, -0.805744, -3.92504e-05, 0.592263, 0.0687756, 0.5, -6.74271)
+visible = false
+speed = 10.0
+
+[node name="car5" parent="road2" instance=ExtResource("2_1e0e7")]
+transform = Transform3D(0.592264, -5.33982e-05, 0.805744, 3.63798e-12, 1, 6.62719e-05, -0.805744, -3.92504e-05, 0.592263, 0.0687756, 0.5, -6.74271)
+visible = false
+speed = 10.0
+
+[node name="car6" parent="road2" instance=ExtResource("2_1e0e7")]
+transform = Transform3D(0.592264, -5.33982e-05, 0.805744, 3.63798e-12, 1, 6.62719e-05, -0.805744, -3.92504e-05, 0.592263, 0.0687756, 0.5, -6.74271)
+visible = false
+speed = 10.0
+
+[node name="car7" parent="road2" instance=ExtResource("2_1e0e7")]
+transform = Transform3D(0.592264, -5.33982e-05, 0.805744, 3.63798e-12, 1, 6.62719e-05, -0.805744, -3.92504e-05, 0.592263, 0.0687756, 0.5, -6.74271)
+visible = false
+speed = 10.0
+
+[node name="car8" parent="road2" instance=ExtResource("2_1e0e7")]
+transform = Transform3D(0.592264, -5.33982e-05, 0.805744, 3.63798e-12, 1, 6.62719e-05, -0.805744, -3.92504e-05, 0.592263, 0.0687756, 0.5, -6.74271)
+visible = false
+speed = 10.0
+
+[node name="car9" parent="road2" instance=ExtResource("2_1e0e7")]
 transform = Transform3D(0.592264, -5.33982e-05, 0.805744, 3.63798e-12, 1, 6.62719e-05, -0.805744, -3.92504e-05, 0.592263, 0.0687756, 0.5, -6.74271)
 visible = false
 speed = 10.0

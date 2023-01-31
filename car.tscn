@@ -1,4 +1,4 @@
-[gd_scene load_steps=4 format=3 uid="uid://bu323iy4kf115"]
+[gd_scene load_steps=4 format=3]
 
 [ext_resource type="Script" path="res://Car.cs" id="1_tpsqp"]
 [ext_resource type="PackedScene" uid="uid://dgbx1dp2ykuiw" path="res://carVisuals.tscn" id="2_ueym8"]
