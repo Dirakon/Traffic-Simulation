@@ -8,7 +8,7 @@ public class RoadIntersection
     
     private const double MoveFactor = 0.5f;
     private const double EntranceTraversalFactor = 0.75f;
-    public const double IntersectionInteractionDistance = 3.5f;
+    public const double IntersectionInteractionDistance = 2f;
     private readonly List<RoadIntersectionExit> exits;
     private readonly double offset1;
     private readonly double offset2;
@@ -142,9 +142,21 @@ public class RoadIntersection
                     }
             );
 
-        var straightExit = exits.Single(exit => exit.Road == currentRoad && exit != entrance);
-        var rightExit = exits.Single(exit => exit != entrance && exit != straightExit && exit.WorldDirection.Cross(straightExit.WorldDirection).Y > 0);
-        var leftExit = exits.Single(exit => exit != straightExit && exit != entrance && exit != rightExit);
+        var sortedExits = exits
+            .Where(exit => exit != entrance)
+            .Select(exit =>
+        {
+            double signedAngle = entrance.WorldDirection.SignedAngleTo(exit.WorldDirection,Vector3.Up);
+            if (signedAngle < 0)
+                signedAngle = 2*Math.PI - signedAngle;
+            return (exit, angularDistance:signedAngle);
+        })
+            .OrderBy(tuple => tuple.angularDistance)
+            .Select(tuple=>tuple.exit)
+            .ToList();
+        var rightExit = sortedExits[0];
+        var straightExit = sortedExits[1];
+        var leftExit = sortedExits[2];
 
         if (exit == straightExit)
         {
@@ -170,7 +182,7 @@ public class RoadIntersection
         else
         {
             // TODO: Investigate why cars want to turn around so often
-            GD.Print($"Was trynna go from {entrance} to {exit}. The intersection is {this.ToString()}");
+            GD.Print($"Was trynna go from {entrance} to {exit}. The intersection is {this}");
             GD.Print($"{straightExit}, {rightExit}, {entrance}, {leftExit}");
             // return true;
             // throw new ArgumentOutOfRangeException();
