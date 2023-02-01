@@ -5,7 +5,6 @@ using Godot;
 
 public class RoadIntersection
 {
-    
     private const double MoveFactor = 0.5f;
     private const double EntranceTraversalFactor = 0.75f;
     public const double IntersectionInteractionDistance = 2f;
@@ -14,6 +13,8 @@ public class RoadIntersection
     private readonly double offset2;
     private readonly Road road1;
     private readonly Road road2;
+
+    private readonly List<CarOnIntersectionEntry> CarEntries = new();
 
 
     public RoadIntersection(Road road1, double offset1, Road road2, double offset2)
@@ -62,7 +63,7 @@ public class RoadIntersection
 
     public override string ToString()
     {
-        return $"[from {road1.Name} to {road2.Name}]";
+        return $"[from {road1.Name}({GetOffsetOfRoad(road1)}) to {road2.Name}({GetOffsetOfRoad(road2)}) ]";
     }
 
     public double GetOffsetOfRoad(Road road)
@@ -94,34 +95,34 @@ public class RoadIntersection
         throw new ArgumentException("Road intersection tries to get the opposite of an unknown road");
     }
 
-    private List<CarOnIntersectionEntry> CarEntries = new();
-    public bool TryReservePath(Car car, Road currentRoad, int currentDirection, Road roadAfterThis, int directionAfterThis)
+    public bool TryReservePath(Car car, Road currentRoad, int currentDirection, Road roadAfterThis,
+        int directionAfterThis)
     {
         if (CarEntries.Any(entry => entry.Car == car))
-        {
             GD.PushError($"Car {car.Name} tries to reserve an intersection path, already being there!");
-        }
 
         var exit = exits.Single(exit => exit.Road == roadAfterThis && exit.RoadDirection == directionAfterThis);
         var entrance = exits.Single(exit => exit.Road == currentRoad && exit.RoadDirection == -currentDirection);
         var spotsToClaim = new List<ReservedCarSpot>
         {
             new(
-                car, 
-                (GetOffsetOfRoad(currentRoad) + entrance.RoadDirection*IntersectionInteractionDistance) % currentRoad.GetMaxOffset(),
+                car,
+                (GetOffsetOfRoad(currentRoad) + entrance.RoadDirection * IntersectionInteractionDistance) %
+                currentRoad.GetMaxOffset(),
                 car.ReserveRadius,
                 currentRoad,
                 currentDirection
-                ),
+            ),
             new(
-                car, 
-                (GetOffsetOfRoad(roadAfterThis) + exit.RoadDirection*IntersectionInteractionDistance) % roadAfterThis.GetMaxOffset(),
+                car,
+                (GetOffsetOfRoad(roadAfterThis) + exit.RoadDirection * IntersectionInteractionDistance) %
+                roadAfterThis.GetMaxOffset(),
                 car.ReserveRadius,
                 roadAfterThis,
                 directionAfterThis
-            ),
+            )
         };
-        bool canReserve = spotsToClaim.All(spot => spot.CanBeClaimed());
+        var canReserve = spotsToClaim.All(spot => spot.CanBeClaimed());
         if (!canReserve)
             return false;
 
@@ -145,14 +146,14 @@ public class RoadIntersection
         var sortedExits = exits
             .Where(exit => exit != entrance)
             .Select(exit =>
-        {
-            double signedAngle = entrance.WorldDirection.SignedAngleTo(exit.WorldDirection,Vector3.Up);
-            if (signedAngle < 0)
-                signedAngle = 2*Math.PI - signedAngle;
-            return (exit, angularDistance:signedAngle);
-        })
+            {
+                double signedAngle = entrance.WorldDirection.SignedAngleTo(exit.WorldDirection, Vector3.Up);
+                if (signedAngle < 0)
+                    signedAngle = 2 * Math.PI - signedAngle;
+                return (exit, angularDistance: signedAngle);
+            })
             .OrderBy(tuple => tuple.angularDistance)
-            .Select(tuple=>tuple.exit)
+            .Select(tuple => tuple.exit)
             .ToList();
         var rightExit = sortedExits[0];
         var straightExit = sortedExits[1];
@@ -170,10 +171,12 @@ public class RoadIntersection
             // 3. Movement from left to right (i.e. left's straight)
             if (CarEntries.Any(entry => entry.Entrance == leftExit && entry.PlannedExit == rightExit))
                 return false;
-        }else if (exit == rightExit)
+        }
+        else if (exit == rightExit)
         {
             // Going to immediate right is unblockable
-        }else if (exit == leftExit)
+        }
+        else if (exit == leftExit)
         {
             // Going to immediate left is blocked by all movement except from left to entrance (i.e. left's immediate right)
             if (!CarEntries.All(entry => entry.Entrance == leftExit && entry.PlannedExit == entrance))
@@ -187,13 +190,13 @@ public class RoadIntersection
             // return true;
             // throw new ArgumentOutOfRangeException();
         }
-        
-        
-        spotsToClaim.ForEach(spot => spot.RegisterClaim(removePreviousClaimFromThisCar: false));
+
+
+        spotsToClaim.ForEach(spot => spot.RegisterClaim(false));
         CarEntries.Add(
             potentialEntry
         );
-        
+
         return true;
     }
 
@@ -207,14 +210,14 @@ public class RoadIntersection
     public int GetCurrentCarDirection(Car car)
     {
         var entry = CarEntries.Single(entry => entry.Car == car);
-        return (entry.Entering? entry.EntranceSpot : entry.ExitSpot).Direction;
+        return (entry.Entering ? entry.EntranceSpot : entry.ExitSpot).Direction;
     }
 
     public void AppropriatelyMoveCar(Car car, double maxCarMovement)
     {
         var epsilon = 0.001;
         var entry = CarEntries.Single(entry => entry.Car == car);
-        var spot = (entry.Entering ? entry.EntranceSpot : entry.ExitSpot);
+        var spot = entry.Entering ? entry.EntranceSpot : entry.ExitSpot;
         var distanceToGoal = Math.Abs(entry.CurrentDestination.Offset - entry.CurrentPosition.Offset);
         var newOffset = entry.CurrentPosition.Offset +
                         spot.Direction * Math.Min(maxCarMovement, distanceToGoal);
@@ -251,27 +254,27 @@ public class RoadIntersection
 internal class CarOnIntersectionEntry
 {
     public Car Car;
-    public ReservedCarSpot EntranceSpot, ExitSpot;
-    public RoadIntersectionExit PlannedExit, Entrance;
     public Position CurrentPosition, CurrentDestination;
     public bool Entering = true;
-    
+    public ReservedCarSpot EntranceSpot, ExitSpot;
+    public RoadIntersectionExit PlannedExit, Entrance;
+
     public CarOnIntersectionEntry(Car car, ReservedCarSpot entranceSpot, ReservedCarSpot exitSpot,
-       RoadIntersectionExit entrance, RoadIntersectionExit plannedExit, Position currentPosition, Position currentDestination)
+        RoadIntersectionExit entrance, RoadIntersectionExit plannedExit, Position currentPosition,
+        Position currentDestination)
     {
-        this.EntranceSpot = entranceSpot;
-        this.ExitSpot = exitSpot;
-        this.Car = car;
-        this.PlannedExit = plannedExit;
-        this.CurrentPosition = currentPosition;
-        this.CurrentDestination = currentDestination;
-        this.Entrance = entrance;
+        EntranceSpot = entranceSpot;
+        ExitSpot = exitSpot;
+        Car = car;
+        PlannedExit = plannedExit;
+        CurrentPosition = currentPosition;
+        CurrentDestination = currentDestination;
+        Entrance = entrance;
     }
 }
 
 internal record RoadIntersectionExit(Vector3 WorldDirection, Road Road, int RoadDirection)
 {
-
     public override string ToString()
     {
         return $"{Road.Name} ({RoadDirection})";

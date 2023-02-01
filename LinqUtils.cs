@@ -28,14 +28,12 @@ internal static class LinqUtils
         if (list.IsEmpty()) throw new ArgumentNullException(nameof(enumerable));
         return list[r.Next(0, list.Count)];
     }
-    
-    public static(IEnumerable<TSource> passed,IEnumerable<TSource> failed) Split<TSource>(
+
+    public static (IEnumerable<TSource> passed, IEnumerable<TSource> failed) Split<TSource>(
         this IEnumerable<TSource> source,
-        Func<TSource,bool> predicate)
+        Func<TSource, bool> predicate)
     {
         var lookup = source.ToLookup(predicate);
-        return (passed:lookup[true], failed:lookup[false]);
+        return (passed: lookup[true], failed: lookup[false]);
     }
-    
-
 }

@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using Godot;
 
 public partial class Car : PathFollow3D
@@ -12,9 +11,9 @@ public partial class Car : PathFollow3D
         NegativeDirectionHOffset,
         PositiveParkedHOffset,
         NegativeParkedHOffset;
-    
 
-    [Export] public double ReserveRadius ;
+
+    [Export] public double ReserveRadius;
 
     [Export] private double speed;
 
@@ -97,6 +96,7 @@ public partial class Car : PathFollow3D
     {
         return delta * speed;
     }
+
     // Called every frame. 'delta' is the elapsed time since the previous frame.
     public override void _Process(double delta)
     {
@@ -107,7 +107,7 @@ public partial class Car : PathFollow3D
                 if (TryFindRandomPath(currentPosition))
                 {
                     GD.Print("READY PATH:");
-                    currentPath.ForEach(el=>GD.Print(el.ToString()));
+                    currentPath.ForEach(el => GD.Print(el.ToString()));
                     var firstOrder = currentPath[0];
                     state = new CarParkedToClaimLane(new ReservedCarSpot(this, firstOrder.StartPosition.Offset,
                         ReserveRadius, firstOrder.GetRoad(), firstOrder.GetDirection()));
@@ -122,31 +122,27 @@ public partial class Car : PathFollow3D
                 var newDistanceToGoal = Math.Abs(newOffset - currentOrder.EndPosition.Offset);
                 var movedSpot = new ReservedCarSpot(this, newOffset, ReserveRadius, currentOrder.GetRoad(),
                     currentOrder.GetDirection());
-                if (!movedSpot.CanBeClaimed())
-                {
-                    return;
-                }
-                if (newDistanceToGoal < RoadIntersection.IntersectionInteractionDistance && currentOrder.CorrelatingIntersection != null)
+                if (!movedSpot.CanBeClaimed()) return;
+                if (newDistanceToGoal < RoadIntersection.IntersectionInteractionDistance &&
+                    currentOrder.CorrelatingIntersection != null)
                 {
                     var roadAfterThis = currentPath[1].GetRoad();
                     var directionAfterThis = currentPath[1].GetDirection();
-                    if (currentOrder.CorrelatingIntersection.TryReservePath(this,currentOrder.GetRoad(),
-                            currentOrder.GetDirection(),roadAfterThis,directionAfterThis))
+                    if (currentOrder.CorrelatingIntersection.TryReservePath(this, currentOrder.GetRoad(),
+                            currentOrder.GetDirection(), roadAfterThis, directionAfterThis))
                     {
                         reservedSpot.UnregisterClaim();
                         currentPath.RemoveAt(0);
                         state = new CarCrossingAnIntersection(currentOrder.CorrelatingIntersection);
                         return;
                     }
-                    else
-                    {
-                        return;
-                    }
+
+                    return;
                 }
-                
-                Progress = (float)movedSpot.Offset;
-                
-                
+
+                Progress = (float) movedSpot.Offset;
+
+
                 if (newDistanceToGoal < epsilon)
                 {
                     currentPath.RemoveAt(0);
@@ -181,6 +177,7 @@ public partial class Car : PathFollow3D
                         if (!otherLaneSpot.CanBeClaimed())
                             return;
                     }
+
                     spotToClaim.RegisterClaim();
                     GetOnTheRoad(spotToClaim.GetPosition(), spotToClaim.Direction);
                     state = new CarMoving(spotToClaim);
@@ -188,12 +185,12 @@ public partial class Car : PathFollow3D
 
                 break;
             case CarCrossingAnIntersection(RoadIntersection intersection):
-                Position position = intersection.GetCurrentCarPosition(this);
-                int direction = intersection.GetCurrentCarDirection(this);
+                var position = intersection.GetCurrentCarPosition(this);
+                var direction = intersection.GetCurrentCarDirection(this);
                 GetOnTheRoad(position, direction);
                 Progress = (float) position.Offset;
                 intersection.AppropriatelyMoveCar(this, GetMaximumCarMovement(delta));
-                
+
                 ReservedCarSpot? newSpot;
                 if ((newSpot = intersection.IntersectionPassed(this)) != null)
                 {
@@ -208,14 +205,12 @@ public partial class Car : PathFollow3D
                         state = new CarMoving(newSpot);
                     }
                 }
+
                 break;
             default:
                 throw new ArgumentOutOfRangeException(nameof(state));
         }
-       
     }
-
-   
 }
 
 internal abstract record CarState;

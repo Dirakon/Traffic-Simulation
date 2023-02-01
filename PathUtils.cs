@@ -5,19 +5,17 @@ using Godot;
 
 internal static class PathUtils
 {
-    
-
     private static List<CarMovement> SplitPathByIntersections(List<CarMovement> originalPath, double reserveRadius)
     {
         return originalPath.SelectMany(carMove =>
             {
                 if (carMove.GetDirection() == 0)
-                    return new List<CarMovement> {};
+                    return new List<CarMovement>();
                 var startingOffset = carMove.StartPosition.Offset;
                 var direction = carMove.GetDirection();
                 var road = carMove.GetRoad();
                 var epsilon = 0.001;
-                
+
                 var viableIntersectionsOrderedByProximity = new List<RoadIntersection>();
                 if (carMove.GetRoad().IsEnclosed())
                     viableIntersectionsOrderedByProximity = road.intersectionsWithOtherRoads
@@ -29,9 +27,13 @@ internal static class PathUtils
                                                  intersection.GetOffsetOfRoad(road) -
                                                  startingOffset) !=
                                              direction;
-                            return loopNeeded ? 
-                                (distance: road.GetMaxOffset() - Math.Abs(intersection.GetOffsetOfRoad(road) - startingOffset), intersection) 
-                                : (distance: Math.Abs(intersection.GetOffsetOfRoad(road) - startingOffset), intersection);
+                            return loopNeeded
+                                ? (
+                                    distance: road.GetMaxOffset() -
+                                              Math.Abs(intersection.GetOffsetOfRoad(road) - startingOffset),
+                                    intersection)
+                                : (distance: Math.Abs(intersection.GetOffsetOfRoad(road) - startingOffset),
+                                    intersection);
                         }).Where(tuple => tuple.distance < carMove.GetDistance())
                         .OrderBy(tuple => tuple.distance)
                         .Select(tuple => tuple.intersection)
@@ -60,7 +62,8 @@ internal static class PathUtils
                     return new List<CarMovement>
                     {
                         new(carMove.StartPosition, onlyIntersection.GetPositionOfRoad(road), onlyIntersection),
-                        new(onlyIntersection.GetPositionOfRoad(road), carMove.EndPosition, carMove.CorrelatingIntersection)
+                        new(onlyIntersection.GetPositionOfRoad(road), carMove.EndPosition,
+                            carMove.CorrelatingIntersection)
                     };
                 }
 
@@ -78,7 +81,7 @@ internal static class PathUtils
                     ).ToList();
 
                 var lastIntersection = pathsBetweenIntersectionPairs[^1].CorrelatingIntersection;
-                
+
                 return pathsBetweenIntersectionPairs
                     .Prepend(new CarMovement(carMove.StartPosition, firstIntersection.GetPositionOfRoad(road),
                         firstIntersection))
@@ -89,11 +92,12 @@ internal static class PathUtils
         ).ToList();
     }
 
-    public static List<CarMovement>? FindTheShortestPathTo(this Position startPosition, Position endPosition, double reserveRadius)
+    public static List<CarMovement>? FindTheShortestPathTo(this Position startPosition, Position endPosition,
+        double reserveRadius)
     {
         var path = FindShortestPath(startPosition, endPosition);
         GD.Print("PRE-READY PATH:");
-        path.ForEach(el=>GD.Print(el.ToString()));
+        path.ForEach(el => GD.Print(el.ToString()));
         if (path != null)
             path = SplitPathByIntersections(path, reserveRadius);
         return path;

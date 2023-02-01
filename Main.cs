@@ -13,7 +13,7 @@ public partial class Main : Node3D
     public static Position GetRandomPosition()
     {
         var randomRoad = Instance.roads.Random();
-        var potentialPosition =  new Position(
+        var potentialPosition = new Position(
             new Random().NextDouble() * randomRoad.GetMaxOffset(),
             randomRoad
         );
@@ -34,10 +34,8 @@ public partial class Main : Node3D
             GD.Print("Tried to generate a position, but it is too close to an intersection!");
             return GetRandomPosition();
         }
-        else
-        {
-            return potentialPosition;
-        }
+
+        return potentialPosition;
     }
 
     // Called when the node enters the scene tree for the first time.
@@ -62,6 +60,35 @@ public partial class Main : Node3D
                 otherRoad.intersectionsWithOtherRoads.AddRange(intersections);
             });
         });
+        ValidateRoadNetwork();
+    }
+
+    private void ValidateRoadNetwork()
+    {
+        var intersectionDistances = roads
+            .SelectMany(road =>
+                road.intersectionsWithOtherRoads.SelectMany(firstIntersection =>
+                    road.intersectionsWithOtherRoads
+                        .Where(secondIntersection => secondIntersection != firstIntersection)
+                        .Select(secondIntersection => (distance: road.IsEnclosed()
+                                ? Math.Min(
+                                    Math.Abs(secondIntersection.GetOffsetOfRoad(road) -
+                                             firstIntersection.GetOffsetOfRoad(road)),
+                                    road.GetMaxOffset() - Math.Abs(secondIntersection.GetOffsetOfRoad(road) -
+                                                                   firstIntersection.GetOffsetOfRoad(road))
+                                )
+                                : Math.Abs(secondIntersection.GetOffsetOfRoad(road) -
+                                           firstIntersection.GetOffsetOfRoad(road)
+                                ), intersectionDescription: $"{firstIntersection}-{secondIntersection}")
+                        )
+                )
+            ).ToList();
+        if (intersectionDistances.IsEmpty())
+            return;
+        var (distance, intersectionDescription) = intersectionDistances.MinBy(tuple => tuple.distance);
+        if (distance <= RoadIntersection.IntersectionInteractionDistance)
+            GD.PushError(
+                $"Intersections are too close for stable work! Min distance is {distance} with {intersectionDescription}");
     }
 
     // Called every frame. 'delta' is the elapsed time since the previous frame.

@@ -19,7 +19,7 @@ public record ReservedCarSpot(Car ReservingCar, double Offset, double ReserveRad
 
     public Position GetPosition()
     {
-        return new(Offset, RoadToReserve);
+        return new Position(Offset, RoadToReserve);
     }
 
     public bool CanBeClaimed()

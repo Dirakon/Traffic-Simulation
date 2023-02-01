@@ -16,7 +16,6 @@ public partial class Road : Path3D
     // Called when the node enters the scene tree for the first time.
     public override void _Ready()
     {
-        
         points = Curve.GetBakedPoints().Select(localPoint => ToGlobal(localPoint)).ToList();
         lines = points.Zip(points.Skip(1)).ToList();
     }
@@ -29,7 +28,7 @@ public partial class Road : Path3D
 
     public double PositionToOffset(Vector3 givenGlobalPosition)
     {
-        return Curve.GetClosestOffset( ToLocal(givenGlobalPosition));
+        return Curve.GetClosestOffset(ToLocal(givenGlobalPosition));
     }
 
     public Vector3 OffsetToPosition(double givenOffset)
