@@ -97,6 +97,14 @@ public partial class Car : PathFollow3D
         return delta * speed;
     }
 
+    private void CancelPath(ReservedCarSpot reservedSpot)
+    {
+        currentPath.Clear();
+        reservedSpot.UnregisterClaim();
+        Park();
+        state = new CarParkedSeekingNewPath(reservedSpot.GetPosition());
+    }
+    
     // Called every frame. 'delta' is the elapsed time since the previous frame.
     public override void _Process(double delta)
     {
@@ -106,30 +114,42 @@ public partial class Car : PathFollow3D
             case CarParkedSeekingNewPath(Position currentPosition):
                 if (TryFindRandomPath(currentPosition))
                 {
-                    GD.Print("READY PATH:");
-                    currentPath.ForEach(el => GD.Print(el.ToString()));
                     var firstOrder = currentPath[0];
                     state = new CarParkedToClaimLane(new ReservedCarSpot(this, firstOrder.StartPosition.Offset,
-                        ReserveRadius, firstOrder.GetRoad(), firstOrder.GetDirection()));
+                        ReserveRadius, firstOrder.GetRoad(), firstOrder.Direction));
                 }
 
                 break;
             case CarMoving(ReservedCarSpot reservedSpot):
                 var currentOrder = currentPath[0];
-                var distanceToGoal = Math.Abs(reservedSpot.Offset - currentOrder.EndPosition.Offset);
-                var newOffset = reservedSpot.Offset +
-                                currentOrder.GetDirection() * Math.Min(GetMaximumCarMovement(delta), distanceToGoal);
-                var newDistanceToGoal = Math.Abs(newOffset - currentOrder.EndPosition.Offset);
-                var movedSpot = new ReservedCarSpot(this, newOffset, ReserveRadius, currentOrder.GetRoad(),
-                    currentOrder.GetDirection());
+                var currentSingleRoadPath = reservedSpot.GetPosition().GetSingleRoadPathWithSetDirection(currentOrder.EndPosition,reservedSpot.Direction);
+                if (currentSingleRoadPath == null)
+                {
+                    GD.PushWarning("Car cancels their path because the reserved spot can't make a path with a set direction");
+                    CancelPath(reservedSpot);
+                    return;
+                }
+
+                var distanceToGoal = currentSingleRoadPath.Distance;
+                var movedSpot = reservedSpot.MovedBy(Math.Min(GetMaximumCarMovement(delta), distanceToGoal),
+                    reservedSpot.Direction);
+                if (movedSpot == null)
+                {
+                    GD.PushWarning("Car cancels the spot moves out of the enclosed road's bounds");
+                    CancelPath(reservedSpot);
+                    return;
+                }
+
+                var newDistanceToGoal = movedSpot.GetPosition().GetSingleRoadPathWithSetDirection(currentOrder.EndPosition,movedSpot.Direction)!
+                    .Distance;
                 if (!movedSpot.CanBeClaimed()) return;
                 if (newDistanceToGoal < RoadIntersection.IntersectionInteractionDistance &&
                     currentOrder.CorrelatingIntersection != null)
                 {
                     var roadAfterThis = currentPath[1].GetRoad();
-                    var directionAfterThis = currentPath[1].GetDirection();
+                    var directionAfterThis = currentPath[1].Direction;
                     if (currentOrder.CorrelatingIntersection.TryReservePath(this, currentOrder.GetRoad(),
-                            currentOrder.GetDirection(), roadAfterThis, directionAfterThis))
+                            currentOrder.Direction, roadAfterThis, directionAfterThis))
                     {
                         reservedSpot.UnregisterClaim();
                         currentPath.RemoveAt(0);
@@ -156,7 +176,7 @@ public partial class Car : PathFollow3D
                     {
                         var nextOrder = currentPath[0];
                         state = new CarParkedToClaimLane(new ReservedCarSpot(this, nextOrder.StartPosition.Offset,
-                            ReserveRadius, nextOrder.GetRoad(), nextOrder.GetDirection()));
+                            ReserveRadius, nextOrder.GetRoad(), nextOrder.Direction));
                     }
                 }
                 else

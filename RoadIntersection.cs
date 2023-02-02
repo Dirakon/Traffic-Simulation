@@ -5,16 +5,16 @@ using Godot;
 
 public class RoadIntersection
 {
-    private const double MoveFactor = 0.5f;
     private const double EntranceTraversalFactor = 0.75f;
+    public const double ProbeDistance = 0.5f;
     public const double IntersectionInteractionDistance = 2f;
+
+    private readonly List<CarOnIntersectionEntry> CarEntries = new();
     private readonly List<RoadIntersectionExit> exits;
     private readonly double offset1;
     private readonly double offset2;
     private readonly Road road1;
     private readonly Road road2;
-
-    private readonly List<CarOnIntersectionEntry> CarEntries = new();
 
 
     public RoadIntersection(Road road1, double offset1, Road road2, double offset2)
@@ -28,24 +28,21 @@ public class RoadIntersection
 
         exits = new List<RoadIntersectionExit>();
         var unsuccessfullyProbedExits = new List<(Road, int)>();
-        foreach (var (road, offset) in new List<(Road, double)> {(road1, offset1), (road2, offset2)})
+        foreach (var (road, startingOffset) in new List<(Road, double)> {(road1, offset1), (road2, offset2)})
         {
             var maxOffset = road.GetMaxOffset();
-            var startingPoint = road.OffsetToPosition(offset);
+            var startingPosition = new Position(startingOffset, road);
+            var startingPoint = road.OffsetToPosition(startingOffset);
             foreach (var probeDirection in new List<int> {-1, 1})
             {
-                var movedOffset = offset + probeDirection * MoveFactor;
-                if (road.IsEnclosed())
-                {
-                    movedOffset = movedOffset % maxOffset;
-                }
-                else if (movedOffset < 0 || movedOffset > maxOffset)
+                var movedPosition = startingPosition.MovedBy(ProbeDistance, probeDirection);
+                if (movedPosition == null)
                 {
                     unsuccessfullyProbedExits.Add((road, probeDirection));
                     continue;
                 }
 
-                var exitWorldDirection = startingPoint.DirectionTo(road.OffsetToPosition(movedOffset));
+                var exitWorldDirection = startingPoint.DirectionTo(road.OffsetToPosition(movedPosition.Value.Offset));
                 exits.Add(new RoadIntersectionExit(exitWorldDirection, road, probeDirection));
             }
         }
@@ -80,7 +77,7 @@ public class RoadIntersection
         return road == road1 || road == road2;
     }
 
-    public Position GetPositionOfRoad(Road road)
+    public Position GetPositionOnRoad(Road road)
     {
         return new Position(GetOffsetOfRoad(road), road);
     }
@@ -107,16 +104,14 @@ public class RoadIntersection
         {
             new(
                 car,
-                (GetOffsetOfRoad(currentRoad) + entrance.RoadDirection * IntersectionInteractionDistance) %
-                currentRoad.GetMaxOffset(),
+                Offset: GetPositionOnRoad(currentRoad).MovedByCapped(IntersectionInteractionDistance, entrance.RoadDirection).Offset,
                 car.ReserveRadius,
                 currentRoad,
                 currentDirection
             ),
             new(
                 car,
-                (GetOffsetOfRoad(roadAfterThis) + exit.RoadDirection * IntersectionInteractionDistance) %
-                roadAfterThis.GetMaxOffset(),
+                Offset: GetPositionOnRoad(roadAfterThis).MovedByCapped(IntersectionInteractionDistance, exit.RoadDirection).Offset,
                 car.ReserveRadius,
                 roadAfterThis,
                 directionAfterThis
@@ -134,12 +129,10 @@ public class RoadIntersection
                 entrance,
                 exit,
                 spotsToClaim[0].GetPosition(),
-                GetPositionOfRoad(currentRoad)
+                GetPositionOnRoad(currentRoad)
                     with
                     {
-                        Offset = (GetOffsetOfRoad(currentRoad) + entrance.RoadDirection *
-                                     IntersectionInteractionDistance * (1 - EntranceTraversalFactor)) %
-                                 currentRoad.GetMaxOffset()
+                        Offset = GetPositionOnRoad(currentRoad).MovedByCapped(IntersectionInteractionDistance * (1 - EntranceTraversalFactor),entrance.RoadDirection).Offset
                     }
             );
 
@@ -185,8 +178,8 @@ public class RoadIntersection
         else
         {
             // TODO: Investigate why cars want to turn around so often
-            GD.Print($"Was trynna go from {entrance} to {exit}. The intersection is {this}");
-            GD.Print($"{straightExit}, {rightExit}, {entrance}, {leftExit}");
+            // GD.Print($"Was trynna go from {entrance} to {exit}. The intersection is {this}");
+            // GD.Print($"{straightExit}, {rightExit}, {entrance}, {leftExit}");
             // return true;
             // throw new ArgumentOutOfRangeException();
         }
@@ -216,22 +209,27 @@ public class RoadIntersection
     public void AppropriatelyMoveCar(Car car, double maxCarMovement)
     {
         var epsilon = 0.001;
+        
         var entry = CarEntries.Single(entry => entry.Car == car);
         var spot = entry.Entering ? entry.EntranceSpot : entry.ExitSpot;
-        var distanceToGoal = Math.Abs(entry.CurrentDestination.Offset - entry.CurrentPosition.Offset);
-        var newOffset = entry.CurrentPosition.Offset +
-                        spot.Direction * Math.Min(maxCarMovement, distanceToGoal);
-        var newDistanceToGoal = Math.Abs(newOffset - entry.CurrentDestination.Offset);
+        
+        SingleRoadPath currentSingleRoadPath = entry.CurrentPosition.GetSingleRoadPathWithSetDirection(entry.CurrentDestination,spot.Direction)!;
+        
+        var distanceToGoal = currentSingleRoadPath.Distance;
+        Position movedPosition = entry.CurrentPosition.MovedBy(Math.Min(maxCarMovement, distanceToGoal),
+            spot.Direction)!.Value;
+        var newDistanceToGoal = movedPosition.GetSingleRoadPathWithSetDirection(entry.CurrentDestination,spot.Direction)!
+            .Distance;
 
         if (entry.Entering && newDistanceToGoal < epsilon)
         {
             entry.Entering = false;
             entry.CurrentDestination = entry.ExitSpot.GetPosition();
-            entry.CurrentPosition = GetPositionOfRoad(entry.CurrentDestination.Road);
+            entry.CurrentPosition = GetPositionOnRoad(entry.CurrentDestination.Road);
         }
         else
         {
-            entry.CurrentPosition.Offset = newOffset;
+            entry.CurrentPosition = movedPosition;
         }
     }
 

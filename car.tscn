@@ -9,6 +9,7 @@
 transform = Transform3D(0.592279, 0.000605129, 0.805733, -2.91038e-11, 1, -0.000751029, -0.805733, 0.000444819, 0.592278, 0.512753, 0.0045166, -7.34731)
 h_offset = -0.75
 v_offset = 0.245
+loop = false
 script = ExtResource("1_tpsqp")
 CarVisualsPrefab = ExtResource("2_ueym8")
 PositiveDirectionHOffset = -1.0

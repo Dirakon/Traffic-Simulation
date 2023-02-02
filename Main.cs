@@ -20,14 +20,7 @@ public partial class Main : Node3D
         if (potentialPosition.Road.intersectionsWithOtherRoads.IsEmpty())
             return potentialPosition;
         var closestIntersectionDistance = potentialPosition.Road.intersectionsWithOtherRoads.Select(intersection =>
-            potentialPosition.Road.IsEnclosed()
-                ? Math.Min(
-                    potentialPosition.Road.GetMaxOffset() - Math.Abs(potentialPosition.Offset -
-                                                                     intersection.GetOffsetOfRoad(
-                                                                         potentialPosition.Road)),
-                    Math.Abs(potentialPosition.Offset - intersection.GetOffsetOfRoad(potentialPosition.Road))
-                )
-                : Math.Abs(potentialPosition.Offset - intersection.GetOffsetOfRoad(potentialPosition.Road))
+            randomRoad.GetShortestPath(intersection.GetOffsetOfRoad(randomRoad), potentialPosition.Offset).Distance
         ).Min();
         if (RoadIntersection.IntersectionInteractionDistance >= closestIntersectionDistance)
         {
@@ -70,16 +63,11 @@ public partial class Main : Node3D
                 road.intersectionsWithOtherRoads.SelectMany(firstIntersection =>
                     road.intersectionsWithOtherRoads
                         .Where(secondIntersection => secondIntersection != firstIntersection)
-                        .Select(secondIntersection => (distance: road.IsEnclosed()
-                                ? Math.Min(
-                                    Math.Abs(secondIntersection.GetOffsetOfRoad(road) -
-                                             firstIntersection.GetOffsetOfRoad(road)),
-                                    road.GetMaxOffset() - Math.Abs(secondIntersection.GetOffsetOfRoad(road) -
-                                                                   firstIntersection.GetOffsetOfRoad(road))
-                                )
-                                : Math.Abs(secondIntersection.GetOffsetOfRoad(road) -
-                                           firstIntersection.GetOffsetOfRoad(road)
-                                ), intersectionDescription: $"{firstIntersection}-{secondIntersection}")
+                        .Select(secondIntersection => (
+                                distance: road.GetShortestPath(firstIntersection.GetOffsetOfRoad(road),
+                                    secondIntersection.GetOffsetOfRoad(road)).Distance,
+                                intersectionDescription: $"{firstIntersection}-{secondIntersection}"
+                            )
                         )
                 )
             ).ToList();

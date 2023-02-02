@@ -4,6 +4,25 @@ using System.Linq;
 
 internal static class LinqUtils
 {
+    public static TSource? MinByOrDefault<TSource, TKey>(
+        this IEnumerable<TSource> source,
+        Func<TSource, TKey> keySelector) where TSource : struct
+    {
+        var list = source as IList<TSource> ?? source.ToList();
+        return list.IsEmpty() ? default(TSource?) : list.MinBy(keySelector);
+    }
+
+    // An example of a bad language design for C#. The following function gives an error,
+    // even though it clearly works for reference types only, while the function above works for value types only...
+    //
+    // public static TSource? MinByOrDefault<TSource,TKey> (
+    //     this IEnumerable<TSource> source,
+    //     Func<TSource, TKey> keySelector) where TSource : class
+    // {
+    //     var list = source as IList<TSource> ?? source.ToList();
+    //     return list.IsEmpty() ? default(TSource?) : list.MinBy(keySelector);
+    // }
+
     public static IEnumerable<T> NotNull<T>(this IEnumerable<T?> enumerable) where T : struct
     {
         return enumerable.Where(e => e != null).Select(e => e!.Value);
@@ -35,5 +54,19 @@ internal static class LinqUtils
     {
         var lookup = source.ToLookup(predicate);
         return (passed: lookup[true], failed: lookup[false]);
+    }
+
+
+    public static TSource? MaxByOrDefault<TSource, TKey>(
+        this IEnumerable<TSource> source,
+        Func<TSource, TKey> keySelector)
+    {
+        var list = source as IList<TSource> ?? source.ToList();
+        return list.IsEmpty() ? default : list.MaxBy(keySelector);
+    }
+
+    public static T? ToNullable<T>(this T source) where T : struct
+    {
+        return source;
     }
 }

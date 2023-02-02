@@ -18,224 +18,224 @@ transform = Transform3D(1, 0, 0, 0, 1, -2.98023e-08, 0, 2.98023e-08, 1, 0, 0, 0)
 transform = Transform3D(-0.869521, 0, 0.493896, 0, 1, 0, -0.493896, 0, -0.869521, 2.35924, 0, -10.159)
 
 [node name="car4" parent="road" instance=ExtResource("2_1e0e7")]
-transform = Transform3D(0.338707, 0, 0.940871, 0, 0.999994, 0, -0.940871, 0, 0.338707, 14.5869, 0.5, -32.3005)
+transform = Transform3D(0.835401, 0, -0.549605, 0, 0.999994, 0, 0.549605, 0, 0.835401, 20.8485, 0.245, -11.925)
 visible = false
 progress = 39.73
 h_offset = 1.18
 speed = 10.0
 
 [node name="car5" parent="road" instance=ExtResource("2_1e0e7")]
-transform = Transform3D(0.338707, 0, 0.940871, 0, 0.999994, 0, -0.940871, 0, 0.338707, 14.5869, 0.5, -32.3005)
+transform = Transform3D(0.835401, 0, -0.549605, 0, 0.999994, 0, 0.549605, 0, 0.835401, 20.8485, 0.245, -11.925)
 visible = false
 progress = 39.73
 h_offset = 1.18
 speed = 10.0
 
 [node name="car6" parent="road" instance=ExtResource("2_1e0e7")]
-transform = Transform3D(0.338707, 0, 0.940871, 0, 0.999994, 0, -0.940871, 0, 0.338707, 14.5869, 0.5, -32.3005)
+transform = Transform3D(0.835401, 0, -0.549605, 0, 0.999994, 0, 0.549605, 0, 0.835401, 20.8485, 0.245, -11.925)
 visible = false
 progress = 39.73
 h_offset = 1.18
 speed = 10.0
 
 [node name="car7" parent="road" instance=ExtResource("2_1e0e7")]
-transform = Transform3D(0.338707, 0, 0.940871, 0, 0.999994, 0, -0.940871, 0, 0.338707, 14.5869, 0.5, -32.3005)
+transform = Transform3D(0.835401, 0, -0.549605, 0, 0.999994, 0, 0.549605, 0, 0.835401, 20.8485, 0.245, -11.925)
 visible = false
 progress = 39.73
 h_offset = 1.18
 speed = 10.0
 
 [node name="car8" parent="road" instance=ExtResource("2_1e0e7")]
-transform = Transform3D(0.338707, 0, 0.940871, 0, 0.999994, 0, -0.940871, 0, 0.338707, 14.5869, 0.5, -32.3005)
+transform = Transform3D(0.835401, 0, -0.549605, 0, 0.999994, 0, 0.549605, 0, 0.835401, 20.8485, 0.245, -11.925)
 visible = false
 progress = 39.73
 h_offset = 1.18
 speed = 10.0
 
 [node name="car9" parent="road" instance=ExtResource("2_1e0e7")]
-transform = Transform3D(0.338707, 0, 0.940871, 0, 0.999994, 0, -0.940871, 0, 0.338707, 14.5869, 0.5, -32.3005)
+transform = Transform3D(0.835401, 0, -0.549605, 0, 0.999994, 0, 0.549605, 0, 0.835401, 20.8485, 0.245, -11.925)
 visible = false
 progress = 39.73
 h_offset = 1.18
 speed = 10.0
 
 [node name="car10" parent="road" instance=ExtResource("2_1e0e7")]
-transform = Transform3D(0.338707, 0, 0.940871, 0, 0.999994, 0, -0.940871, 0, 0.338707, 14.5869, 0.5, -32.3005)
+transform = Transform3D(0.835401, 0, -0.549605, 0, 0.999994, 0, 0.549605, 0, 0.835401, 20.8485, 0.245, -11.925)
 visible = false
 progress = 39.73
 h_offset = 1.18
 speed = 10.0
 
 [node name="car11" parent="road" instance=ExtResource("2_1e0e7")]
-transform = Transform3D(0.338707, 0, 0.940871, 0, 0.999994, 0, -0.940871, 0, 0.338707, 14.5869, 0.5, -32.3005)
+transform = Transform3D(0.835401, 0, -0.549605, 0, 0.999994, 0, 0.549605, 0, 0.835401, 20.8485, 0.245, -11.925)
 visible = false
 progress = 39.73
 h_offset = 1.18
 speed = 10.0
 
 [node name="car12" parent="road" instance=ExtResource("2_1e0e7")]
-transform = Transform3D(0.338707, 0, 0.940871, 0, 0.999994, 0, -0.940871, 0, 0.338707, 14.5869, 0.5, -32.3005)
+transform = Transform3D(0.835401, 0, -0.549605, 0, 0.999994, 0, 0.549605, 0, 0.835401, 20.8485, 0.245, -11.925)
 visible = false
 progress = 39.73
 h_offset = 1.18
 speed = 10.0
 
 [node name="car13" parent="road" instance=ExtResource("2_1e0e7")]
-transform = Transform3D(0.338707, 0, 0.940871, 0, 0.999994, 0, -0.940871, 0, 0.338707, 14.5869, 0.5, -32.3005)
+transform = Transform3D(0.835401, 0, -0.549605, 0, 0.999994, 0, 0.549605, 0, 0.835401, 20.8485, 0.245, -11.925)
 visible = false
 progress = 39.73
 h_offset = 1.18
 speed = 10.0
 
 [node name="car14" parent="road" instance=ExtResource("2_1e0e7")]
-transform = Transform3D(0.338707, 0, 0.940871, 0, 0.999994, 0, -0.940871, 0, 0.338707, 13.6091, 0.5, -29.5841)
+transform = Transform3D(0.835401, 0, -0.549605, 0, 0.999994, 0, 0.549605, 0, 0.835401, 18.4367, 0.245, -13.5118)
 visible = false
 progress = 39.73
 h_offset = -1.707
 speed = 10.0
 
 [node name="car15" parent="road" instance=ExtResource("2_1e0e7")]
-transform = Transform3D(0.338707, 0, 0.940871, 0, 0.999994, 0, -0.940871, 0, 0.338707, 14.5869, 0.5, -32.3005)
+transform = Transform3D(0.835401, 0, -0.549605, 0, 0.999994, 0, 0.549605, 0, 0.835401, 20.8485, 0.245, -11.925)
 visible = false
 progress = 39.73
 h_offset = 1.18
 speed = 10.0
 
 [node name="car16" parent="road" instance=ExtResource("2_1e0e7")]
-transform = Transform3D(0.338707, 0, 0.940871, 0, 0.999994, 0, -0.940871, 0, 0.338707, 14.5869, 0.5, -32.3005)
+transform = Transform3D(0.835401, 0, -0.549605, 0, 0.999994, 0, 0.549605, 0, 0.835401, 20.8485, 0.245, -11.925)
 visible = false
 progress = 39.73
 h_offset = 1.18
 speed = 10.0
 
 [node name="car17" parent="road" instance=ExtResource("2_1e0e7")]
-transform = Transform3D(0.338707, 0, 0.940871, 0, 0.999994, 0, -0.940871, 0, 0.338707, 14.5869, 0.5, -32.3005)
+transform = Transform3D(0.835401, 0, -0.549605, 0, 0.999994, 0, 0.549605, 0, 0.835401, 20.8485, 0.245, -11.925)
 visible = false
 progress = 39.73
 h_offset = 1.18
 speed = 10.0
 
 [node name="car18" parent="road" instance=ExtResource("2_1e0e7")]
-transform = Transform3D(0.338707, 0, 0.940871, 0, 0.999994, 0, -0.940871, 0, 0.338707, 14.5869, 0.5, -32.3005)
+transform = Transform3D(0.835401, 0, -0.549605, 0, 0.999994, 0, 0.549605, 0, 0.835401, 20.8485, 0.245, -11.925)
 visible = false
 progress = 39.73
 h_offset = 1.18
 speed = 10.0
 
 [node name="car19" parent="road" instance=ExtResource("2_1e0e7")]
-transform = Transform3D(0.338707, 0, 0.940871, 0, 0.999994, 0, -0.940871, 0, 0.338707, 14.5869, 0.5, -32.3005)
+transform = Transform3D(0.835401, 0, -0.549605, 0, 0.999994, 0, 0.549605, 0, 0.835401, 20.8485, 0.245, -11.925)
 visible = false
 progress = 39.73
 h_offset = 1.18
 speed = 10.0
 
 [node name="car20" parent="road" instance=ExtResource("2_1e0e7")]
-transform = Transform3D(0.338707, 0, 0.940871, 0, 0.999994, 0, -0.940871, 0, 0.338707, 14.5869, 0.5, -32.3005)
+transform = Transform3D(0.835401, 0, -0.549605, 0, 0.999994, 0, 0.549605, 0, 0.835401, 20.8485, 0.245, -11.925)
 visible = false
 progress = 39.73
 h_offset = 1.18
 speed = 10.0
 
 [node name="car21" parent="road" instance=ExtResource("2_1e0e7")]
-transform = Transform3D(0.338707, 0, 0.940871, 0, 0.999994, 0, -0.940871, 0, 0.338707, 14.5869, 0.5, -32.3005)
+transform = Transform3D(0.835401, 0, -0.549605, 0, 0.999994, 0, 0.549605, 0, 0.835401, 20.8485, 0.245, -11.925)
 visible = false
 progress = 39.73
 h_offset = 1.18
 speed = 10.0
 
 [node name="car22" parent="road" instance=ExtResource("2_1e0e7")]
-transform = Transform3D(0.338707, 0, 0.940871, 0, 0.999994, 0, -0.940871, 0, 0.338707, 14.5869, 0.5, -32.3005)
+transform = Transform3D(0.835401, 0, -0.549605, 0, 0.999994, 0, 0.549605, 0, 0.835401, 20.8485, 0.245, -11.925)
 visible = false
 progress = 39.73
 h_offset = 1.18
 speed = 10.0
 
 [node name="car23" parent="road" instance=ExtResource("2_1e0e7")]
-transform = Transform3D(0.338707, 0, 0.940871, 0, 0.999994, 0, -0.940871, 0, 0.338707, 14.5869, 0.5, -32.3005)
+transform = Transform3D(0.835401, 0, -0.549605, 0, 0.999994, 0, 0.549605, 0, 0.835401, 20.8485, 0.245, -11.925)
 visible = false
 progress = 39.73
 h_offset = 1.18
 speed = 10.0
 
 [node name="car24" parent="road" instance=ExtResource("2_1e0e7")]
-transform = Transform3D(0.338707, 0, 0.940871, 0, 0.999994, 0, -0.940871, 0, 0.338707, 14.5869, 0.5, -32.3005)
+transform = Transform3D(0.835401, 0, -0.549605, 0, 0.999994, 0, 0.549605, 0, 0.835401, 20.8485, 0.245, -11.925)
 visible = false
 progress = 39.73
 h_offset = 1.18
 speed = 10.0
 
 [node name="car25" parent="road" instance=ExtResource("2_1e0e7")]
-transform = Transform3D(0.338707, 0, 0.940871, 0, 0.999994, 0, -0.940871, 0, 0.338707, 14.5869, 0.5, -32.3005)
+transform = Transform3D(0.835401, 0, -0.549605, 0, 0.999994, 0, 0.549605, 0, 0.835401, 20.8485, 0.245, -11.925)
 visible = false
 progress = 39.73
 h_offset = 1.18
 speed = 10.0
 
 [node name="car26" parent="road" instance=ExtResource("2_1e0e7")]
-transform = Transform3D(0.338707, 0, 0.940871, 0, 0.999994, 0, -0.940871, 0, 0.338707, 14.5869, 0.5, -32.3005)
+transform = Transform3D(0.835401, 0, -0.549605, 0, 0.999994, 0, 0.549605, 0, 0.835401, 20.8485, 0.245, -11.925)
 visible = false
 progress = 39.73
 h_offset = 1.18
 speed = 10.0
 
 [node name="car27" parent="road" instance=ExtResource("2_1e0e7")]
-transform = Transform3D(0.338707, 0, 0.940871, 0, 0.999994, 0, -0.940871, 0, 0.338707, 14.5869, 0.5, -32.3005)
+transform = Transform3D(0.835401, 0, -0.549605, 0, 0.999994, 0, 0.549605, 0, 0.835401, 20.8485, 0.245, -11.925)
 visible = false
 progress = 39.73
 h_offset = 1.18
 speed = 10.0
 
 [node name="car28" parent="road" instance=ExtResource("2_1e0e7")]
-transform = Transform3D(0.338707, 0, 0.940871, 0, 0.999994, 0, -0.940871, 0, 0.338707, 14.5869, 0.5, -32.3005)
+transform = Transform3D(0.835401, 0, -0.549605, 0, 0.999994, 0, 0.549605, 0, 0.835401, 20.8485, 0.245, -11.925)
 visible = false
 progress = 39.73
 h_offset = 1.18
 speed = 10.0
 
 [node name="car29" parent="road" instance=ExtResource("2_1e0e7")]
-transform = Transform3D(0.338707, 0, 0.940871, 0, 0.999994, 0, -0.940871, 0, 0.338707, 14.5869, 0.5, -32.3005)
+transform = Transform3D(0.835401, 0, -0.549605, 0, 0.999994, 0, 0.549605, 0, 0.835401, 20.8485, 0.245, -11.925)
 visible = false
 progress = 39.73
 h_offset = 1.18
 speed = 10.0
 
 [node name="car30" parent="road" instance=ExtResource("2_1e0e7")]
-transform = Transform3D(0.338707, 0, 0.940871, 0, 0.999994, 0, -0.940871, 0, 0.338707, 14.5869, 0.5, -32.3005)
+transform = Transform3D(0.835401, 0, -0.549605, 0, 0.999994, 0, 0.549605, 0, 0.835401, 20.8485, 0.245, -11.925)
 visible = false
 progress = 39.73
 h_offset = 1.18
 speed = 10.0
 
 [node name="car31" parent="road" instance=ExtResource("2_1e0e7")]
-transform = Transform3D(0.338707, 0, 0.940871, 0, 0.999994, 0, -0.940871, 0, 0.338707, 14.5869, 0.5, -32.3005)
+transform = Transform3D(0.835401, 0, -0.549605, 0, 0.999994, 0, 0.549605, 0, 0.835401, 20.8485, 0.245, -11.925)
 visible = false
 progress = 39.73
 h_offset = 1.18
 speed = 10.0
 
 [node name="car32" parent="road" instance=ExtResource("2_1e0e7")]
-transform = Transform3D(0.338707, 0, 0.940871, 0, 0.999994, 0, -0.940871, 0, 0.338707, 14.5869, 0.5, -32.3005)
+transform = Transform3D(0.835401, 0, -0.549605, 0, 0.999994, 0, 0.549605, 0, 0.835401, 20.8485, 0.245, -11.925)
 visible = false
 progress = 39.73
 h_offset = 1.18
 speed = 10.0
 
 [node name="car33" parent="road" instance=ExtResource("2_1e0e7")]
-transform = Transform3D(0.338707, 0, 0.940871, 0, 0.999994, 0, -0.940871, 0, 0.338707, 14.5869, 0.5, -32.3005)
+transform = Transform3D(0.835401, 0, -0.549605, 0, 0.999994, 0, 0.549605, 0, 0.835401, 20.8485, 0.245, -11.925)
 visible = false
 progress = 39.73
 h_offset = 1.18
 speed = 10.0
 
 [node name="car34" parent="road" instance=ExtResource("2_1e0e7")]
-transform = Transform3D(0.338707, 0, 0.940871, 0, 0.999994, 0, -0.940871, 0, 0.338707, 14.5869, 0.5, -32.3005)
+transform = Transform3D(-0.150429, 0, 0.988599, 0, 0.999994, 0, -0.988599, 0, -0.150429, 5.92582, 0.245, -33.2554)
 visible = false
-progress = 39.73
+progress = 10.0351
 h_offset = 1.18
 speed = 10.0
 
 [node name="car35" parent="road" instance=ExtResource("2_1e0e7")]
-transform = Transform3D(0.338707, 0, 0.940871, 0, 0.999994, 0, -0.940871, 0, 0.338707, 14.5869, 0.5, -32.3005)
+transform = Transform3D(0.835401, 0, -0.549605, 0, 0.999994, 0, 0.549605, 0, 0.835401, 20.8485, 0.245, -11.925)
 visible = false
 progress = 39.73
 h_offset = 1.18
@@ -243,6 +243,12 @@ speed = 10.0
 
 [node name="road3" parent="." instance=ExtResource("1_rcmr0")]
 transform = Transform3D(-0.5378, 0, -0.843072, 0, 1, 0, 0.843072, 0, -0.5378, -41.9669, 0, -4.35543)
+
+[node name="car35" parent="road3" instance=ExtResource("2_1e0e7")]
+transform = Transform3D(-0.585433, 0, 0.810601, 0, 0.999994, 0, -0.810601, 0, -0.585433, -3.04079, 0.245, -27.948)
+visible = false
+h_offset = 1.18
+speed = 10.0
 
 [node name="road2" parent="." instance=ExtResource("1_rcmr0")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.333524, 0, 0.659031)

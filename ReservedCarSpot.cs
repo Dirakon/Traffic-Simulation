@@ -3,18 +3,13 @@ using System.Linq;
 
 public record ReservedCarSpot(Car ReservingCar, double Offset, double ReserveRadius, Road RoadToReserve, int Direction)
 {
-    public double GetStartingOffset()
-    {
-        return RoadToReserve.IsEnclosed()
-            ? Offset % RoadToReserve.Curve.GetBakedLength() - ReserveRadius
-            : Math.Max(Offset - ReserveRadius, 0);
-    }
 
-    public double GetEndingOffset()
+    public ReservedCarSpot? MovedBy(double offset, int direction)
     {
-        return RoadToReserve.IsEnclosed()
-            ? Offset % RoadToReserve.Curve.GetBakedLength() + ReserveRadius
-            : Math.Min(Offset + ReserveRadius, 0);
+        var newPosition = GetPosition().MovedBy(offset, direction);
+        if (newPosition == null)
+            return null;
+        return this with {Offset = newPosition.Value.Offset};
     }
 
     public Position GetPosition()
@@ -27,8 +22,7 @@ public record ReservedCarSpot(Car ReservingCar, double Offset, double ReserveRad
         return RoadToReserve.ReservedCarSpots.All(spot =>
             spot.Direction != Direction ||
             spot.ReservingCar == ReservingCar ||
-            spot.GetStartingOffset() > GetEndingOffset() ||
-            spot.GetEndingOffset() < GetStartingOffset()
+            GetPosition().GetShortestSingleRoadPath(spot.GetPosition()).Distance > 2*ReserveRadius
         );
     }
 
