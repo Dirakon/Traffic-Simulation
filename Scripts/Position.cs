@@ -1,6 +1,8 @@
 using System;
 using Godot;
 
+namespace TrafficSimulation.scripts;
+
 public record struct Position(double Offset, Road Road)
 {
     public override string ToString()
@@ -23,6 +25,7 @@ public record struct Position(double Offset, Road Road)
 
         return Road.GetShortestPath(Offset, other.Offset);
     }
+
     public SingleRoadPath? GetSingleRoadPathWithSetDirection(Position other, int direction)
     {
         if (other.Road != Road)
@@ -31,7 +34,7 @@ public record struct Position(double Offset, Road Road)
             throw new InvalidOperationException();
         }
 
-        return Road.GetPathWithSetDirection(Offset, other.Offset,direction);
+        return Road.GetPathWithSetDirection(Offset, other.Offset, direction);
     }
 
     public Position? MovedBy(double offset, int direction)

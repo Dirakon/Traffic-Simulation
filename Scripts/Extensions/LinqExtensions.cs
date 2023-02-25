@@ -2,7 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-internal static class LinqUtils
+namespace TrafficSimulation.scripts.extensions;
+
+internal static class LinqExtensions
 {
     public static TSource? MinByOrDefault<TSource, TKey>(
         this IEnumerable<TSource> source,

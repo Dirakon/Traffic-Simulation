@@ -1,5 +1,7 @@
 using Godot;
 
+namespace TrafficSimulation.scripts;
+
 public record struct CarMovement
 {
     public CarMovement(Position startPosition, Position endPosition, RoadIntersection? correlatingIntersection)

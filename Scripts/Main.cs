@@ -3,23 +3,26 @@ using System.Collections.Generic;
 using System.Linq;
 using Godot;
 using Godot.Collections;
+using TrafficSimulation.scripts.extensions;
+
+namespace TrafficSimulation.scripts;
 
 public partial class Main : Node3D
 {
-    private static Main Instance;
-    [Export] private Array<NodePath> inEditorRoads;
-    private List<Road> roads;
+    private static Main _instance;
+    [Export] private Array<NodePath> _inEditorRoads;
+    private List<Road> _roads;
 
     public static Position GetRandomPosition()
     {
-        var randomRoad = Instance.roads.Random();
+        var randomRoad = _instance._roads.Random();
         var potentialPosition = new Position(
             new Random().NextDouble() * randomRoad.GetMaxOffset(),
             randomRoad
         );
-        if (potentialPosition.Road.intersectionsWithOtherRoads.IsEmpty())
+        if (potentialPosition.Road.IntersectionsWithOtherRoads.IsEmpty())
             return potentialPosition;
-        var closestIntersectionDistance = potentialPosition.Road.intersectionsWithOtherRoads.Select(intersection =>
+        var closestIntersectionDistance = potentialPosition.Road.IntersectionsWithOtherRoads.Select(intersection =>
             randomRoad.GetShortestPath(intersection.GetOffsetOfRoad(randomRoad), potentialPosition.Offset).Distance
         ).Min();
         if (RoadIntersection.IntersectionInteractionDistance >= closestIntersectionDistance)
@@ -34,23 +37,23 @@ public partial class Main : Node3D
     // Called when the node enters the scene tree for the first time.
     public override void _Ready()
     {
-        Instance = this;
-        roads = inEditorRoads.Select(GetNode<Road>).ToList();
-        roads.ForEach(road =>
+        _instance = this;
+        _roads = _inEditorRoads.Select(GetNode<Road>).ToList();
+        _roads.ForEach(road =>
         {
-            roads.ForEach(otherRoad =>
+            _roads.ForEach(otherRoad =>
             {
                 if (otherRoad == road)
                     return;
                 var intersectionsAlreadyFound =
-                    road.intersectionsWithOtherRoads
+                    road.IntersectionsWithOtherRoads
                         .Any(readyIntersection => readyIntersection.GetRoadOppositeFrom(road) == otherRoad);
                 if (intersectionsAlreadyFound)
                     return;
 
                 var intersections = road.GetIntersectionsWith(otherRoad);
-                road.intersectionsWithOtherRoads.AddRange(intersections);
-                otherRoad.intersectionsWithOtherRoads.AddRange(intersections);
+                road.IntersectionsWithOtherRoads.AddRange(intersections);
+                otherRoad.IntersectionsWithOtherRoads.AddRange(intersections);
             });
         });
         ValidateRoadNetwork();
@@ -58,10 +61,10 @@ public partial class Main : Node3D
 
     private void ValidateRoadNetwork()
     {
-        var intersectionDistances = roads
+        var intersectionDistances = _roads
             .SelectMany(road =>
-                road.intersectionsWithOtherRoads.SelectMany(firstIntersection =>
-                    road.intersectionsWithOtherRoads
+                road.IntersectionsWithOtherRoads.SelectMany(firstIntersection =>
+                    road.IntersectionsWithOtherRoads
                         .Where(secondIntersection => secondIntersection != firstIntersection)
                         .Select(secondIntersection => (
                                 distance: road.GetShortestPath(firstIntersection.GetOffsetOfRoad(road),

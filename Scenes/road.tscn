@@ -1,6 +1,6 @@
-[gd_scene load_steps=3 format=3 uid="uid://c4mvq6fphnisr"]
+[gd_scene load_steps=3 format=3 uid="uid://c3v1lkilsom8y"]
 
-[ext_resource type="Script" path="res://Road.cs" id="1_0otgv"]
+[ext_resource type="Script" path="res://Scripts/Road.cs" id="1_0otgv"]
 
 [sub_resource type="Curve3D" id="Curve3D_xwt7x"]
 _data = {

@@ -1,11 +1,14 @@
 using System;
 using System.Collections.Generic;
 using Godot;
+using TrafficSimulation.scripts.extensions;
+
+namespace TrafficSimulation.scripts;
 
 public partial class Car : PathFollow3D
 {
     [Export] public PackedScene CarVisualsPrefab;
-    private List<CarMovement>? currentPath;
+    private List<CarMovement>? _currentPath;
 
     [Export] public float PositiveDirectionHOffset,
         NegativeDirectionHOffset,
@@ -15,9 +18,9 @@ public partial class Car : PathFollow3D
 
     [Export] public double ReserveRadius;
 
-    [Export] private double speed;
+    [Export] private double _speed;
 
-    private CarState state;
+    private CarState _state;
 
     public void CreateVisuals()
     {
@@ -34,7 +37,7 @@ public partial class Car : PathFollow3D
                    throw new InvalidOperationException($"{Name} does not have initial road as the parent");
         var offset = road.PositionToOffset(GlobalPosition);
         var currentPosition = new Position(offset, road);
-        state = new CarParkedSeekingNewPath(currentPosition);
+        _state = new CarParkedSeekingNewPath(currentPosition);
         GetOnTheRoad(currentPosition, 1);
         Park();
         CallDeferred(MethodName.CreateVisuals);
@@ -59,25 +62,22 @@ public partial class Car : PathFollow3D
 
     private void Park()
     {
-        const double epsilon = 0.0001;
-        if (Math.Abs(HOffset - PositiveDirectionHOffset) < epsilon) HOffset = PositiveParkedHOffset;
-        else if (Math.Abs(HOffset - NegativeDirectionHOffset) < epsilon) HOffset = NegativeParkedHOffset;
+        if (HOffset.AlmostEqualTo(PositiveDirectionHOffset)) HOffset = PositiveParkedHOffset;
+        else if (HOffset.AlmostEqualTo(NegativeDirectionHOffset)) HOffset = NegativeParkedHOffset;
         else throw new ArgumentOutOfRangeException();
     }
 
     private int GetParkedDirection()
     {
-        const double epsilon = 0.0001;
-        if (Math.Abs(HOffset - PositiveParkedHOffset) < epsilon) return 1;
-        if (Math.Abs(HOffset - NegativeParkedHOffset) < epsilon) return -1;
+        if (HOffset.AlmostEqualTo(PositiveParkedHOffset)) return 1;
+        if (HOffset.AlmostEqualTo(NegativeParkedHOffset)) return -1;
         throw new ArgumentOutOfRangeException();
     }
 
     private void UnPark()
     {
-        const double epsilon = 0.0001;
-        if (Math.Abs(HOffset - PositiveParkedHOffset) < epsilon) HOffset = PositiveDirectionHOffset;
-        else if (Math.Abs(HOffset - NegativeParkedHOffset) < epsilon) HOffset = NegativeDirectionHOffset;
+        if (HOffset.AlmostEqualTo(PositiveParkedHOffset)) HOffset = PositiveDirectionHOffset;
+        else if (HOffset.AlmostEqualTo(NegativeParkedHOffset)) HOffset = NegativeDirectionHOffset;
         else throw new ArgumentOutOfRangeException();
     }
 
@@ -88,44 +88,45 @@ public partial class Car : PathFollow3D
 
     private bool TryFindRandomPath(Position currentPosition)
     {
-        currentPath = currentPosition.FindTheShortestPathTo(Main.GetRandomPosition(), ReserveRadius);
-        return currentPath is {Count: > 0};
+        _currentPath = currentPosition.FindTheShortestPathTo(Main.GetRandomPosition(), ReserveRadius);
+        return _currentPath is {Count: > 0};
     }
 
     private double GetMaximumCarMovement(double delta)
     {
-        return delta * speed;
+        return delta * _speed;
     }
 
     private void CancelPath(ReservedCarSpot reservedSpot)
     {
-        currentPath.Clear();
+        _currentPath.Clear();
         reservedSpot.UnregisterClaim();
         Park();
-        state = new CarParkedSeekingNewPath(reservedSpot.GetPosition());
+        _state = new CarParkedSeekingNewPath(reservedSpot.GetPosition());
     }
-    
+
     // Called every frame. 'delta' is the elapsed time since the previous frame.
     public override void _Process(double delta)
     {
-        var epsilon = 0.001;
-        switch (state)
+        switch (_state)
         {
-            case CarParkedSeekingNewPath(Position currentPosition):
+            case CarParkedSeekingNewPath(var currentPosition):
                 if (TryFindRandomPath(currentPosition))
                 {
-                    var firstOrder = currentPath[0];
-                    state = new CarParkedToClaimLane(new ReservedCarSpot(this, firstOrder.StartPosition.Offset,
+                    var firstOrder = _currentPath[0];
+                    _state = new CarParkedToClaimLane(new ReservedCarSpot(this, firstOrder.StartPosition.Offset,
                         ReserveRadius, firstOrder.GetRoad(), firstOrder.Direction));
                 }
 
                 break;
-            case CarMoving(ReservedCarSpot reservedSpot):
-                var currentOrder = currentPath[0];
-                var currentSingleRoadPath = reservedSpot.GetPosition().GetSingleRoadPathWithSetDirection(currentOrder.EndPosition,reservedSpot.Direction);
+            case CarMoving({ } reservedSpot):
+                var currentOrder = _currentPath[0];
+                var currentSingleRoadPath = reservedSpot.GetPosition()
+                    .GetSingleRoadPathWithSetDirection(currentOrder.EndPosition, reservedSpot.Direction);
                 if (currentSingleRoadPath == null)
                 {
-                    GD.PushWarning("Car cancels their path because the reserved spot can't make a path with a set direction");
+                    GD.PushWarning(
+                        "Car cancels their path because the reserved spot can't make a path with a set direction");
                     CancelPath(reservedSpot);
                     return;
                 }
@@ -140,20 +141,21 @@ public partial class Car : PathFollow3D
                     return;
                 }
 
-                var newDistanceToGoal = movedSpot.GetPosition().GetSingleRoadPathWithSetDirection(currentOrder.EndPosition,movedSpot.Direction)!
+                var newDistanceToGoal = movedSpot.GetPosition()
+                    .GetSingleRoadPathWithSetDirection(currentOrder.EndPosition, movedSpot.Direction)!
                     .Distance;
                 if (!movedSpot.CanBeClaimed()) return;
                 if (newDistanceToGoal < RoadIntersection.IntersectionInteractionDistance &&
                     currentOrder.CorrelatingIntersection != null)
                 {
-                    var roadAfterThis = currentPath[1].GetRoad();
-                    var directionAfterThis = currentPath[1].Direction;
+                    var roadAfterThis = _currentPath[1].GetRoad();
+                    var directionAfterThis = _currentPath[1].Direction;
                     if (currentOrder.CorrelatingIntersection.TryReservePath(this, currentOrder.GetRoad(),
                             currentOrder.Direction, roadAfterThis, directionAfterThis))
                     {
                         reservedSpot.UnregisterClaim();
-                        currentPath.RemoveAt(0);
-                        state = new CarCrossingAnIntersection(currentOrder.CorrelatingIntersection);
+                        _currentPath.RemoveAt(0);
+                        _state = new CarCrossingAnIntersection(currentOrder.CorrelatingIntersection);
                         return;
                     }
 
@@ -163,30 +165,30 @@ public partial class Car : PathFollow3D
                 Progress = (float) movedSpot.Offset;
 
 
-                if (newDistanceToGoal < epsilon)
+                if (newDistanceToGoal.AlmostEqualTo(0))
                 {
-                    currentPath.RemoveAt(0);
+                    _currentPath.RemoveAt(0);
                     reservedSpot.UnregisterClaim();
                     Park();
-                    if (currentPath.IsEmpty())
+                    if (_currentPath.IsEmpty())
                     {
-                        state = new CarParkedSeekingNewPath(movedSpot.GetPosition());
+                        _state = new CarParkedSeekingNewPath(movedSpot.GetPosition());
                     }
                     else
                     {
-                        var nextOrder = currentPath[0];
-                        state = new CarParkedToClaimLane(new ReservedCarSpot(this, nextOrder.StartPosition.Offset,
+                        var nextOrder = _currentPath[0];
+                        _state = new CarParkedToClaimLane(new ReservedCarSpot(this, nextOrder.StartPosition.Offset,
                             ReserveRadius, nextOrder.GetRoad(), nextOrder.Direction));
                     }
                 }
                 else
                 {
                     movedSpot.RegisterClaim();
-                    state = new CarMoving(movedSpot);
+                    _state = new CarMoving(movedSpot);
                 }
 
                 break;
-            case CarParkedToClaimLane(ReservedCarSpot spotToClaim):
+            case CarParkedToClaimLane({ } spotToClaim):
                 if (spotToClaim.CanBeClaimed())
                 {
                     var currentDirection = GetParkedDirection();
@@ -200,11 +202,11 @@ public partial class Car : PathFollow3D
 
                     spotToClaim.RegisterClaim();
                     GetOnTheRoad(spotToClaim.GetPosition(), spotToClaim.Direction);
-                    state = new CarMoving(spotToClaim);
+                    _state = new CarMoving(spotToClaim);
                 }
 
                 break;
-            case CarCrossingAnIntersection(RoadIntersection intersection):
+            case CarCrossingAnIntersection({ } intersection):
                 var position = intersection.GetCurrentCarPosition(this);
                 var direction = intersection.GetCurrentCarDirection(this);
                 GetOnTheRoad(position, direction);
@@ -214,21 +216,21 @@ public partial class Car : PathFollow3D
                 ReservedCarSpot? newSpot;
                 if ((newSpot = intersection.IntersectionPassed(this)) != null)
                 {
-                    if (currentPath.IsEmpty())
+                    if (_currentPath.IsEmpty())
                     {
                         newSpot.UnregisterClaim();
                         Park();
-                        state = new CarParkedSeekingNewPath(newSpot.GetPosition());
+                        _state = new CarParkedSeekingNewPath(newSpot.GetPosition());
                     }
                     else
                     {
-                        state = new CarMoving(newSpot);
+                        _state = new CarMoving(newSpot);
                     }
                 }
 
                 break;
             default:
-                throw new ArgumentOutOfRangeException(nameof(state));
+                throw new ArgumentOutOfRangeException(nameof(_state));
         }
     }
 }

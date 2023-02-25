@@ -1,7 +1,9 @@
 using System.Collections.Generic;
 using System.Linq;
 
-internal static class PathUtils
+namespace TrafficSimulation.scripts.extensions;
+
+internal static class PathExtensions
 {
     private static List<CarMovement> SplitPathByIntersections(List<CarMovement> originalPath, double reserveRadius)
     {
@@ -12,12 +14,12 @@ internal static class PathUtils
                 var startingOffset = carMove.StartPosition.Offset;
                 var direction = carMove.Direction;
                 var road = carMove.GetRoad();
-                var epsilon = 0.001;
 
-                var viableIntersectionsOrderedByProximity = road.intersectionsWithOtherRoads
+                var viableIntersectionsOrderedByProximity = road.IntersectionsWithOtherRoads
                     .Where(intersection => intersection != carMove.CorrelatingIntersection)
                     .Where(intersection =>
-                        road.GetShortestPath(intersection.GetOffsetOfRoad(road), startingOffset).Distance > epsilon)
+                        !road.GetShortestPath(intersection.GetOffsetOfRoad(road), startingOffset).Distance
+                            .AlmostEqualTo(0))
                     .Select(intersection =>
                     {
                         var singleRoadPath =
@@ -85,7 +87,6 @@ internal static class PathUtils
     private static List<CarMovement>? FindShortestPath(Position startPosition, Position endPosition,
         double currentPathLength = 0, Dictionary<Position, double>? shortestDistances = null)
     {
-        const double epsilon = 0.0001;
         if (startPosition.Road == endPosition.Road)
             return new List<CarMovement> {new(startPosition, endPosition, null)};
 
@@ -93,7 +94,8 @@ internal static class PathUtils
 
         if (shortestDistances.TryGetValue(startPosition, out var recordedPathLength))
         {
-            if (recordedPathLength <= currentPathLength + epsilon) return null;
+            if (recordedPathLength <= currentPathLength || recordedPathLength.AlmostEqualTo(currentPathLength))
+                return null;
 
             shortestDistances[startPosition] = currentPathLength;
         }
@@ -102,7 +104,7 @@ internal static class PathUtils
             shortestDistances.Add(startPosition, currentPathLength);
         }
 
-        var paths = startPosition.Road.intersectionsWithOtherRoads
+        var paths = startPosition.Road.IntersectionsWithOtherRoads
             .Select(intersection =>
             {
                 var currentRoad = startPosition.Road;

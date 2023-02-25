@@ -1,6 +1,6 @@
 [gd_scene load_steps=10 format=3 uid="uid://dgbx1dp2ykuiw"]
 
-[ext_resource type="Script" path="res://CarVisuals.cs" id="1_4och0"]
+[ext_resource type="Script" path="res://Scripts/CarVisuals.cs" id="1_pah2f"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_kkcn0"]
 resource_name = "Wheel.001"
@@ -144,7 +144,7 @@ shadow_mesh = SubResource("ArrayMesh_odqbe")
 
 [node name="car" type="CharacterBody3D"]
 transform = Transform3D(0.087, -5.7809e-12, -9.60309e-23, 5.7809e-12, 0.087, 4.33567e-12, -1.92062e-22, -4.33567e-12, 0.087, 0, -0.351969, 0.000264168)
-script = ExtResource("1_4och0")
+script = ExtResource("1_pah2f")
 
 [node name="Cylinder" type="MeshInstance3D" parent="."]
 transform = Transform3D(-7.3435e-11, -0.221843, -4.83083e-08, -0.552582, 2.94817e-11, 5.50762e-11, -5.50762e-11, 1.93941e-08, -0.552582, -2.32347, -0.529485, 3.3498)

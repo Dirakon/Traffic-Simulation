@@ -1,18 +1,20 @@
 using System;
 using Godot;
 
+namespace TrafficSimulation.scripts;
+
 public partial class CarVisuals : CharacterBody3D
 {
-    private float Acceleration = 5000f,
-        RotationSpeed = 20f,
-        DifferenceTreshold = 0.25f,
-        VelocityDissapearanceFactor = 1f,
-        TurboDroppoff = 1f,
-        TurboModifier = 5f;
+    private float _acceleration = 5000f,
+        _rotationSpeed = 20f,
+        _differenceTreshold = 0.25f,
+        _velocityDissapearanceFactor = 1f,
+        _turboDroppoff = 1f,
+        _turboModifier = 5f;
 
-    private Car CarToFollow;
+    private Car _carToFollow;
 
-    private float MaxSpeed = 7.5f;
+    private float _maxSpeed = 7.5f;
 
     // Called when the node enters the scene tree for the first time.
     public override void _Ready()
@@ -27,12 +29,12 @@ public partial class CarVisuals : CharacterBody3D
 
     public override void _PhysicsProcess(double delta)
     {
-        var difference = CarToFollow.GlobalPosition - GlobalPosition;
+        var difference = _carToFollow.GlobalPosition - GlobalPosition;
         difference.Y = 0;
 
-        if (difference.Length() < DifferenceTreshold)
+        if (difference.Length() < _differenceTreshold)
         {
-            Velocity *= VelocityDissapearanceFactor;
+            Velocity *= _velocityDissapearanceFactor;
             return;
         }
 
@@ -43,16 +45,16 @@ public partial class CarVisuals : CharacterBody3D
         var angleDifference = forward.SignedAngleTo(direction, Vector3.Up);
         var oldSign = Math.Sign(angleDifference);
 
-        var toRotate = oldSign * delta * RotationSpeed;
+        var toRotate = oldSign * delta * _rotationSpeed;
         if (Math.Abs(toRotate) > Math.Abs(angleDifference)) toRotate = angleDifference;
         RotateY((float) toRotate);
 
         var modifier = 1f;
-        if (difference.Length() > TurboDroppoff) modifier = (difference.Length() - TurboDroppoff) * TurboModifier;
-        Velocity += forward * (float) (Acceleration * modifier * delta);
+        if (difference.Length() > _turboDroppoff) modifier = (difference.Length() - _turboDroppoff) * _turboModifier;
+        Velocity += forward * (float) (_acceleration * modifier * delta);
 
-        var newMax = MaxSpeed;
-        if (difference.Length() > TurboDroppoff) newMax += (difference.Length() - TurboDroppoff) * TurboModifier;
+        var newMax = _maxSpeed;
+        if (difference.Length() > _turboDroppoff) newMax += (difference.Length() - _turboDroppoff) * _turboModifier;
 
         if (Velocity.Length() > newMax) Velocity = Velocity.Normalized() * newMax;
 
@@ -61,7 +63,7 @@ public partial class CarVisuals : CharacterBody3D
 
     public void Init(Car car)
     {
-        CarToFollow = car;
+        _carToFollow = car;
 
         var mesh = GetNode<MeshInstance3D>("Cube").Mesh;
 
